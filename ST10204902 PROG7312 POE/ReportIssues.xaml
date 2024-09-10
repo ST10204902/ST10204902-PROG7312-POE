@@ -34,34 +34,25 @@
         </Grid.RowDefinitions>
 
         <!--  Location Input  -->
-        <TextBlock
-            Grid.Row="0"
-            Margin="0,10,0,5"
-            HorizontalAlignment="Center"
-            FontSize="14"
-            Text="Location:" />
+
         <TextBox
             x:Name="txtLocation"
-            Grid.Row="1"
-            Height="30"
+            Grid.Row="0"
             Margin="0,0,0,10"
-            
             HorizontalAlignment="Stretch"
+            ui:ControlHelper.Header="Location:"
+            ui:ControlHelper.PlaceholderText="Enter the location of the issue here"
             TextChanged="txtLocation_TextChanged" />
 
         <!--  Category Selection  -->
-        <TextBlock
-            Grid.Row="2"
-            Margin="0,10,0,5"
-            HorizontalAlignment="Center"
-            FontSize="14"
-            Text="Category:" />
+
         <ComboBox
             x:Name="cmbCategory"
-            Grid.Row="3"
-            Height="30"
+            Grid.Row="2"
             Margin="0,0,0,10"
             HorizontalAlignment="Stretch"
+            ui:ControlHelper.Header="Category:"
+            ui:ControlHelper.PlaceholderText="Select a category from this dropdown"
             SelectionChanged="cmbCategory_SelectionChanged">
             <ComboBoxItem Content="Sanitation" />
             <ComboBoxItem Content="Roads" />
@@ -72,16 +63,13 @@
         <!--  Description Box  -->
         <TextBlock
             Grid.Row="4"
-            Margin="0,10,0,5"
-            HorizontalAlignment="Center"
+            Margin="0,0,0,10"
             FontSize="14"
             Text="Description:" />
         <RichTextBox
             x:Name="rtbDescription"
             Grid.Row="5"
             Margin="0,0,0,10"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
             ui:ControlHelper.PlaceholderText="Enter the details of your issue here"
             SpellCheck.IsEnabled="True"
             TextChanged="rtbDescription_TextChanged" />
@@ -105,8 +93,6 @@
             TextChanged="txtMediaAttachment_TextChanged"
             Visibility="Collapsed" />
 
-
-
         <!--  Progress Bar  -->
         <Grid Grid.Row="8" Margin="0,10,0,10">
             <Grid.RowDefinitions>
@@ -117,19 +103,22 @@
                 Width="150"
                 Height="Auto"
                 HorizontalAlignment="Center"
+                FontSize="14"
                 Text="Progress:"
                 TextAlignment="Center" />
             <ui:ProgressBar
                 x:Name="reportProgressBar"
                 Grid.Row="1"
                 Margin="0,10,0,0"
+                IsIndeterminate="False"
                 HorizontalAlignment="Stretch"
                 Maximum="100"
                 Minimum="0"
-                Value="0">
-            </ui:ProgressBar>
-            
+                Value="0" />
+
         </Grid>
+
+
 
         <!--  Submit and Back Container  -->
         <Grid Grid.Row="9" Margin="0,10,0,10">

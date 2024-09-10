@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:ST10204902_PROG7312_POE"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
     xmlns:ui="http://schemas.modernwpf.com/2019"
     Title="Municipal Services"
     Width="350"
@@ -64,8 +65,20 @@
             Margin="16,8,16,8"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            Click="btnReportIssues_Click"
-            Content="Report Issues" />
+            Click="btnReportIssues_Click">
+
+            <ui:SimpleStackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <Image
+                    Width="32"
+                    Height="32"
+                    Source="AppImages/ReportIssueIcon.png" />
+                <TextBlock
+                    Margin="8,0,0,0"
+                    VerticalAlignment="Center"
+                    FontSize="14"
+                    Text="Report Issues" />
+            </ui:SimpleStackPanel>
+        </Button>
 
         <!--  Local Events Button (disabled)  -->
         <Button
