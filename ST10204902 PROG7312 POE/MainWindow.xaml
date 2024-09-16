@@ -36,6 +36,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <!--  Main Menu Title Label  -->
@@ -99,10 +100,20 @@
             VerticalAlignment="Stretch"
             Content="Service Request Status"
             IsEnabled="False" />
+
+        <Button
+            Name="btnFeedback"
+            Grid.Row="5"
+            Margin="16,8,16,8"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Click="btnFeedback_Click"
+            Content="Application Feedback" />
+
         <!--  Exit Button  -->
         <Button
             Name="btnExit"
-            Grid.Row="5"
+            Grid.Row="6"
             Margin="16,8,16,16"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"

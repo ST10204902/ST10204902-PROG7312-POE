@@ -1,11 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Security.Authentication.ExtendedProtection;
-using System.Threading.Tasks;
 using System.Windows;
 using ST10204902_PROG7312_POE.Models;
 
@@ -16,8 +10,14 @@ namespace ST10204902_PROG7312_POE
     /// </summary>
     public partial class App : Application
     {
+        //---------------------------------------------------------
+        // Variable Declaration
         public IServiceProvider ServiceProvider { get; private set; }
 
+        /// <summary>
+        /// Start the application with the main window
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnStartup(StartupEventArgs e)
         {
             var serviceCollection = new ServiceCollection();
@@ -28,6 +28,10 @@ namespace ST10204902_PROG7312_POE
             mainWindow.Show();
         }
 
+        /// <summary>
+        /// Configure the services for the application
+        /// </summary>
+        /// <param name="services"></param>
         private void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IIssueRepository, IssueRepository>();
@@ -36,3 +40,4 @@ namespace ST10204902_PROG7312_POE
         }
     }
 }
+//----------------------------------EOF------------------------------

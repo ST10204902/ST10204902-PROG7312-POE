@@ -2,9 +2,7 @@
 using ST10204902_PROG7312_POE.Models;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,7 +22,6 @@ namespace ST10204902_PROG7312_POE
         //---------------------------------------------------------------------------------------
         //Variables
         private readonly MainWindow _mainWindow;
-
         private readonly IIssueRepository _issueRepository;
 
         private Issue _currentIssue = new Issue();
@@ -40,6 +37,7 @@ namespace ST10204902_PROG7312_POE
         public ReportIssues(MainWindow mainWindow, IIssueRepository issueRepository)
         {
             InitializeComponent();
+            ToolTipSetup();
             _mainWindow = mainWindow;
             _issueRepository = issueRepository;
         }
@@ -51,8 +49,23 @@ namespace ST10204902_PROG7312_POE
         public ReportIssues()
         {
             InitializeComponent();
-            DataContext = this;
         }
+
+        //---------------------------------------------------------------------------------------
+        /// <summary>
+        /// Setup the tooltips for the buttons and other controls
+        /// </summary>
+        private void ToolTipSetup()
+        {
+            txtLocation.ToolTip = "Enter the location where the issue is occurring.";
+            cmbCategory.ToolTip = "Select the category that best describes the issue.";
+            rtbDescription.ToolTip = "Provide a detailed description of the issue.";
+            btnAttachMedia.ToolTip = "Attach any relevant media files to the issue.";
+            txtMediaAttachment.ToolTip = "Displays the attached media files.";
+            btnBack.ToolTip = "Return to the main menu without submitting the issue.";
+            btnSubmit.ToolTip = "Submit the issue report.";
+        }
+
 
         //---------------------------------------------------------------------------------------
         /// <summary>
@@ -143,25 +156,16 @@ namespace ST10204902_PROG7312_POE
                 //Cast selected item to ComboBoxItem to get its content
                 ComboBoxItem selectedItem = (ComboBoxItem)cmbCategory.SelectedItem;
 
+                //Assign the values to the current issue
                 _currentIssue.Location = txtLocation.Text;
                 _currentIssue.Category = selectedItem.Content.ToString();
                 TextRange textRange = new TextRange(rtbDescription.Document.ContentStart, rtbDescription.Document.ContentEnd);
                 _currentIssue.Description = textRange.Text.Trim();
 
+                //Add the issue to the repository
                 _issueRepository.AddIssue(_currentIssue);
-                foreach (var issue in _issueRepository.GetAllIssues())
-                {
-                    // Display the issue details
-                    Console.WriteLine($"Issue at {issue.Location}");
-                    Console.WriteLine($"Category: {issue.Category}");
-                    Console.WriteLine($"Description: {issue.Description}");
-                    Console.WriteLine("Media Attachments:");
-                    foreach (string mediaAttachment in issue.GetMediaAttachmentDetails())
-                    {
-                        Console.WriteLine(mediaAttachment);
-                    }
-                }
 
+                //Show a success message and close the window
                 MessageBox.Show("Issue reported successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 _isIssueSubmitted = true;
                 _mainWindow.Show();
@@ -428,6 +432,7 @@ namespace ST10204902_PROG7312_POE
             }
         }
 
+        //---------------------------------------------------------------------------------------
         /// <summary>
         /// Update the description validation brush
         /// </summary>

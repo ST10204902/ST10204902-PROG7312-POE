@@ -1,19 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ST10204902_PROG7312_POE.Models;
 
 namespace ST10204902_PROG7312_POE
@@ -24,15 +12,12 @@ namespace ST10204902_PROG7312_POE
     /// </summary>
     public partial class MainWindow : Window
     {
+        //---------------------------------------------------------
+        // Variable Declaration
         private readonly IIssueRepository _issueRepository;
         private readonly IServiceProvider _serviceProvider;
 
         //---------------------------------------------------------
-        //Events
-        public event EventHandler IssuesUpdated;
-
-
-
         /// <summary>
         /// Parameterized constructor
         /// </summary>
@@ -41,41 +26,36 @@ namespace ST10204902_PROG7312_POE
         {
             InitializeComponent();
             ToolTipSetup();
-            IssuesUpdated += OnIssuesUpdated;
+
             _issueRepository = issueRepository;
             _serviceProvider = serviceProvider;
         }
 
-
         //---------------------------------------------------------
         /// <summary>
-        /// Add an issue to the list of issues
+        /// Set up the tooltips for the buttons
         /// </summary>
-        /// <param name="issue"></param>
-        public void AddIssueToList(Issue issue)
+        private void ToolTipSetup()
         {
-            _issueRepository.AddIssue(issue);
-            IssuesUpdated?.Invoke(this, EventArgs.Empty);
+            SetButtonToolTip(btnReportIssues, "Report issues with the municipal services.");
+            SetButtonToolTip(btnLocalEvents, "This feature is coming soon.");
+            SetButtonToolTip(btnServiceStatus, "This feature is coming soon.");
+            SetButtonToolTip(btnExit, "Exit the application.");
         }
 
         //---------------------------------------------------------
         /// <summary>
-        /// Setup the tooltips for the buttons
+        /// Set the tooltip for the button
         /// </summary>
-        private void ToolTipSetup()
+        /// <param name="button"></param>
+        /// <param name="text"></param>
+        private void SetButtonToolTip(Button button, string text)
         {
-            ToolTip toolTipReportIssues = new ToolTip();
-            toolTipReportIssues.Content = "Report issues with the municipal services.";
-            btnReportIssues.ToolTip = toolTipReportIssues;
-
-            ToolTip toolTipComingSoon = new ToolTip();
-            toolTipComingSoon.Content = "This feature is coming soon.";
-            btnLocalEvents.ToolTip = toolTipComingSoon;
-            btnServiceStatus.ToolTip = toolTipComingSoon;
-
-            ToolTip toolTipExit = new ToolTip();
-            toolTipExit.Content = "Exit the application.";
-            btnExit.ToolTip = toolTipExit;
+            ToolTip toolTip = new ToolTip
+            {
+                Content = text
+            };
+            button.ToolTip = toolTip;
         }
 
         //---------------------------------------------------------
@@ -90,29 +70,6 @@ namespace ST10204902_PROG7312_POE
             ReportIssues reportIssues = new ReportIssues(this, _issueRepository);
             reportIssues.Show();
             this.Hide();
-        }
-
-        //---------------------------------------------------------
-        /// <summary>
-        /// Update the list of issues
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnIssuesUpdated(object sender, EventArgs e)
-        {
-            var issues = _issueRepository.GetAllIssues();
-            Console.WriteLine("List of Issues:");
-            foreach(var issue in issues)
-            {
-                Console.WriteLine($"Issue at {issue.Location}");
-                Console.WriteLine($"Category: {issue.Category}");
-                Console.WriteLine($"Description: {issue.Description}");
-                Console.WriteLine("Media Attachments:");
-                foreach (string mediaAttachment in issue.GetMediaAttachmentDetails())
-                {
-                    Console.WriteLine(mediaAttachment);
-                }
-            }
         }
 
         //---------------------------------------------------------
@@ -142,6 +99,31 @@ namespace ST10204902_PROG7312_POE
             Storyboard fadeInStoryboard = (Storyboard)FindResource("FadeInStoryboard");
             fadeInStoryboard.Begin();
         }
+
+        //---------------------------------------------------------
+        /// <summary>
+        /// Feedback button click event handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnFeedback_Click(object sender, RoutedEventArgs e)
+        {
+            string url = Properties.Settings.Default.GFormURL;
+
+            try
+            {
+                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = url,
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An error occurred while trying to open the feedback form. Please try again later.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 }
+
 //----------------------------------EOF---------------------------------------

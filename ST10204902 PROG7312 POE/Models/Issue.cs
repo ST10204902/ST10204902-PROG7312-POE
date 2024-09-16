@@ -13,6 +13,7 @@ namespace ST10204902_PROG7312_POE.Models
     {
         //---------------------------------------------------------
         //Variables
+        public Guid Guid { get; set; } = Guid.NewGuid();
         public string Location { get; set; }
         public string Category { get; set; }
         public string Description { get; set; }
