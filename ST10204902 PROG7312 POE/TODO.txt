@@ -2,3 +2,7 @@
 - Add Functionality to submit in ReportIssues.xaml.cs
 - Data Validation for all fields
 - Mess around with ModernWpf more
+- Show media preview after adding
+x Add list storage to MainMenu
+- Add list adding functionality to report issues page 
+	ReportIssue object -> _mainWindow.ListName.Add(ReportIssue))

@@ -110,12 +110,11 @@
                 x:Name="reportProgressBar"
                 Grid.Row="1"
                 Margin="0,10,0,0"
-                IsIndeterminate="False"
                 HorizontalAlignment="Stretch"
+                IsIndeterminate="False"
                 Maximum="100"
                 Minimum="0"
                 Value="0" />
-
         </Grid>
 
 

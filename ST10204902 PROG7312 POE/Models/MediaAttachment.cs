@@ -6,12 +6,18 @@ using System.Threading.Tasks;
 
 namespace ST10204902_PROG7312_POE.Models
 {
+    /// <summary>
+    /// MediaAttachment class. Represents a media attachment that can be added to an issue.
+    /// </summary>
     public class MediaAttachment
     {
+        //---------------------------------------------------------
+        //Variables
         public string FileName { get; private set; }
         public string FilePath { get; private set; }
         public Type FileType { get; private set; }
 
+        //---------------------------------------------------------
         /// <summary>
         /// Parameterized constructor. Initializes the media attachment with the file name, file path and file type.
         /// </summary>
@@ -31,6 +37,7 @@ namespace ST10204902_PROG7312_POE.Models
             FileType = fileType;
         }
 
+        //---------------------------------------------------------
         /// <summary>
         /// Validates the file type of the media attachment. 
         /// This will only throw if the user somehow manages to select an invalid file type
