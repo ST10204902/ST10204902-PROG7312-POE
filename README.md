@@ -54,13 +54,12 @@ This project is a WPF application designed to allow users to report issues relat
 │   ├── IIssueRepository.cs
 │   ├── Issue.cs
 │   └── MediaAttachment.cs
-├── Views/
-│   ├── MainWindow.xaml
-│   ├── MainWindow.xaml.cs
-│   ├── ReportIssues.xaml
-│   └── ReportIssues.xaml.cs
 ├── App.xaml
 ├── App.xaml.cs
+├── MainWindow.xaml
+├── MainWindow.xaml.cs
+├── ReportIssues.xaml
+├── ReportIssues.xaml.cs
 ├── Properties/
 │   ├── AssemblyInfo.cs
 │   └── Resources.resx
