@@ -30,7 +30,7 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="0.25*" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -43,8 +43,10 @@
         <TextBlock
             x:Name="txbMainMenuTitle"
             Grid.Row="0"
-            Margin="16,0,16,0"
-            HorizontalAlignment="Center"
+            Grid.RowSpan="2"
+            Grid.Column="1"
+            Margin="20,0,0,0"
+            HorizontalAlignment="Left"
             FontSize="20"
             FontWeight="Bold"
             Text="Municipal Services Main Menu" />
@@ -53,9 +55,8 @@
         <Image
             x:Name="imgMunicipalLogo"
             Grid.Row="1"
-            Margin="4"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
+            Grid.ColumnSpan="2"
+            Margin="4,4,4,4"
             Source="AppImages/MunicipalLogo.png" />
 
 
@@ -63,7 +64,8 @@
         <Button
             x:Name="btnReportIssues"
             Grid.Row="2"
-            Margin="16,8,16,8"
+            Grid.Column="1"
+            Margin="5,8,16,8"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Click="btnReportIssues_Click">
@@ -85,7 +87,8 @@
         <Button
             Name="btnLocalEvents"
             Grid.Row="3"
-            Margin="16,8,16,8"
+            Grid.Column="1"
+            Margin="5,8,16,8"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Content="Local Events and Announcements"
@@ -95,7 +98,8 @@
         <Button
             Name="btnServiceStatus"
             Grid.Row="4"
-            Margin="16,8,16,8"
+            Grid.Column="1"
+            Margin="5,8,16,8"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Content="Service Request Status"
@@ -104,7 +108,8 @@
         <Button
             Name="btnFeedback"
             Grid.Row="5"
-            Margin="16,8,16,8"
+            Grid.Column="1"
+            Margin="5,8,16,8"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Click="btnFeedback_Click"
@@ -114,7 +119,8 @@
         <Button
             Name="btnExit"
             Grid.Row="6"
-            Margin="16,8,16,16"
+            Grid.Column="1"
+            Margin="5,8,16,16"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Click="btnExit_Click"

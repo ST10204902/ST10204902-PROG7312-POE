@@ -34,7 +34,6 @@
         </Grid.RowDefinitions>
 
         <!--  Location Input  -->
-
         <TextBox
             x:Name="txtLocation"
             Grid.Row="0"
@@ -45,7 +44,6 @@
             TextChanged="txtLocation_TextChanged" />
 
         <!--  Category Selection  -->
-
         <ComboBox
             x:Name="cmbCategory"
             Grid.Row="2"
@@ -117,8 +115,6 @@
                 Value="0" />
         </Grid>
 
-
-
         <!--  Submit and Back Container  -->
         <Grid Grid.Row="9" Margin="0,10,0,10">
             <Grid.ColumnDefinitions>
@@ -144,7 +140,5 @@
                 Click="btnSubmit_Click"
                 Content="Submit" />
         </Grid>
-
-
     </Grid>
 </Window>
