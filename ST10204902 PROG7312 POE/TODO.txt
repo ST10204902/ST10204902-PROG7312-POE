@@ -1,4 +1,2 @@
-﻿- Add Icons as PNGs to each button in MainWindow.xaml
-- Add Functionality to submit in ReportIssues.xaml.cs
-- Data Validation for all fields
+﻿- Data Validation for all fields
 - Mess around with ModernWpf more
