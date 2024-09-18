@@ -17,8 +17,8 @@ This project is a WPF application designed to allow users to report issues relat
 ## Features
 - **Report Issues**: Users can report issues by providing details such as location, category, and description.
 - **Attach Media**: Users can attach media files (images, videos) to the reported issues.
-- **Progress Tracking**: The application tracks the progress of issue reporting.
 - **Tooltips**: Provides tooltips for better user guidance.
+- **Feedback**: Users can submit feedback about the app via a Google Form
 
 ## Getting Started
 
@@ -29,7 +29,7 @@ This project is a WPF application designed to allow users to report issues relat
 ### Installation
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/ST10204902_PROG7312_POE.git
+    git clone https://github.com/ST10204902/ST10204902_PROG7312_POE.git
     ```
 2. Open the solution in Visual Studio:
     ```bash
@@ -54,13 +54,12 @@ This project is a WPF application designed to allow users to report issues relat
 │   ├── IIssueRepository.cs
 │   ├── Issue.cs
 │   └── MediaAttachment.cs
-├── Views/
-│   ├── MainWindow.xaml
-│   ├── MainWindow.xaml.cs
-│   ├── ReportIssues.xaml
-│   └── ReportIssues.xaml.cs
 ├── App.xaml
 ├── App.xaml.cs
+├── MainWindow.xaml
+├── MainWindow.xaml.cs
+├── ReportIssues.xaml
+├── ReportIssues.xaml.cs
 ├── Properties/
 │   ├── AssemblyInfo.cs
 │   └── Resources.resx
