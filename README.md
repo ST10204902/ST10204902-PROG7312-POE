@@ -17,7 +17,6 @@ This project is a WPF application designed to allow users to report issues relat
 ## Features
 - **Report Issues**: Users can report issues by providing details such as location, category, and description.
 - **Attach Media**: Users can attach media files (images, videos) to the reported issues.
-- **Progress Tracking**: The application tracks the progress of issue reporting.
 - **Tooltips**: Provides tooltips for better user guidance.
 - **Feedback**: Users can submit feedback about the app via a Google Form
 
