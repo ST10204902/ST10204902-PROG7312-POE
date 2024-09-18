@@ -30,7 +30,7 @@ This project is a WPF application designed to allow users to report issues relat
 ### Installation
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/ST10204902_PROG7312_POE.git
+    git clone https://github.com/ST10204902/ST10204902_PROG7312_POE.git
     ```
 2. Open the solution in Visual Studio:
     ```bash
