@@ -25,39 +25,11 @@ namespace ST10204902_PROG7312_POE
         public MainWindow(IIssueRepository issueRepository, IServiceProvider serviceProvider)
         {
             InitializeComponent();
-            ToolTipSetup();
 
             _issueRepository = issueRepository;
             _serviceProvider = serviceProvider;
         }
-
-        //---------------------------------------------------------
-        /// <summary>
-        /// Set up the tooltips for the buttons
-        /// </summary>
-        private void ToolTipSetup()
-        {
-            SetButtonToolTip(btnReportIssues, "Report issues with the municipal services.");
-            SetButtonToolTip(btnLocalEvents, "This feature is coming soon.");
-            SetButtonToolTip(btnServiceStatus, "This feature is coming soon.");
-            SetButtonToolTip(btnExit, "Exit the application.");
-        }
-
-        //---------------------------------------------------------
-        /// <summary>
-        /// Set the tooltip for the button
-        /// </summary>
-        /// <param name="button"></param>
-        /// <param name="text"></param>
-        private void SetButtonToolTip(Button button, string text)
-        {
-            ToolTip toolTip = new ToolTip
-            {
-                Content = text
-            };
-            button.ToolTip = toolTip;
-        }
-
+        
         //---------------------------------------------------------
         /// <summary>
         /// Report Issues button click event handler
@@ -80,12 +52,7 @@ namespace ST10204902_PROG7312_POE
         /// <param name="e"></param>
         private void btnExit_Click(object sender, RoutedEventArgs e)
         {
-            //Display a confirm dialog to close the app
-            MessageBoxResult result = MessageBox.Show("Are you sure you want to exit?", "Exit Municipal Service Application", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (result == MessageBoxResult.Yes)
-            {
-                Application.Current.Shutdown();
-            }
+            ConfirmExit();
         }
 
         //---------------------------------------------------------
@@ -121,6 +88,30 @@ namespace ST10204902_PROG7312_POE
             catch (Exception ex)
             {
                 MessageBox.Show("An error occurred while trying to open the feedback form. Please try again later.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        //---------------------------------------------------------
+        /// <summary>
+        /// Window closing event handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            ConfirmExit();
+        }
+
+        //---------------------------------------------------------
+        /// <summary>
+        /// Private method to confirm exit
+        /// </summary>
+        private void ConfirmExit()
+        {
+            MessageBoxResult result = MessageBox.Show("Are you sure you want to exit?", "Exit Municipal Service Application", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                Application.Current.Shutdown();
             }
         }
     }

@@ -16,6 +16,7 @@
     Loaded="Window_Loaded"
     ResizeMode="CanResize"
     WindowStartupLocation="CenterScreen"
+    Closing="Window_Closing"
     mc:Ignorable="d">
     <Window.Resources>
         <Storyboard x:Key="FadeInStoryboard">
@@ -68,7 +69,9 @@
             Margin="5,8,16,8"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            Click="btnReportIssues_Click">
+            Click="btnReportIssues_Click"
+            ToolTip="Report issues with the municipal services."
+            ToolTipService.ShowOnDisabled="True">
 
             <ui:SimpleStackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                 <Image
@@ -92,7 +95,9 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Content="Local Events and Announcements"
-            IsEnabled="False" />
+            IsEnabled="False"
+            ToolTip="This feature is coming soon."
+            ToolTipService.ShowOnDisabled="True" />
 
         <!--  Service Request Status Button (disabled)  -->
         <Button
@@ -103,7 +108,9 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Content="Service Request Status"
-            IsEnabled="False" />
+            IsEnabled="False"
+            ToolTip="This feature is coming soon."
+            ToolTipService.ShowOnDisabled="True" />
 
         <Button
             Name="btnFeedback"
@@ -113,7 +120,9 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Click="btnFeedback_Click"
-            Content="Application Feedback" />
+            Content="Application Feedback"
+            ToolTip="Give feedback on the Municipal Services application."
+            ToolTipService.ShowOnDisabled="True" />
 
         <!--  Exit Button  -->
         <Button
@@ -124,6 +133,8 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Click="btnExit_Click"
-            Content="Exit" />
+            Content="Exit"
+            ToolTip="Exit the application"
+            ToolTipService.ShowOnDisabled="True" />
     </Grid>
 </Window>
