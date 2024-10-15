@@ -20,7 +20,6 @@ namespace ST10204902_PROG7312_POE
     public partial class ViewEvents : Window, INotifyPropertyChanged
     {
         private readonly IEventRepository _eventRepository;
-        private readonly IEventSearcher _eventSearcher;
         private readonly MainWindow _mainWindow;
         private ObservableCollection<Event> _events;
 
@@ -34,12 +33,10 @@ namespace ST10204902_PROG7312_POE
             }
         }
 
-        public ViewEvents(IEventRepository eventRepository ,IEventSearcher eventSearcher, MainWindow mainWindow)
+        public ViewEvents(IEventRepository eventRepository , MainWindow mainWindow)
         {
             InitializeComponent();
-            _eventRepository = eventRepository;
-            _eventSearcher = eventSearcher;
-            
+            _eventRepository = eventRepository;            
             _mainWindow = mainWindow;
 
             Events = new ObservableCollection<Event>();
@@ -48,17 +45,17 @@ namespace ST10204902_PROG7312_POE
             _eventRepository.EventAdded += OnEventAdded;
 
             Task.Run(LoadEventsAsync);
-            Console.WriteLine(Events);
         }
 
         public async Task LoadEventsAsync()
         {
             await LoadCategoriesAsync();
             var events = await _eventRepository.GetAllEventsAsync();
-            Events.Clear();
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                foreach (var ev in events)
+                Events.Clear();
+                var uniqueEvents = events.GroupBy(e => new { e.Title, e.Date }).Select(g => g.First());
+                foreach (var ev in uniqueEvents)
                 {
                     Events.Add(ev);
                 }
@@ -85,7 +82,11 @@ namespace ST10204902_PROG7312_POE
             // Ensure UI updates occur on the main thread
             await Application.Current.Dispatcher.InvokeAsync(() =>
             {
-                Events.Add(evnt);
+                // Add event only if it's not already in the list
+                if (!Events.Any(e => e.Title == evnt.Title && e.Date == evnt.Date))
+                {
+                    Events.Add(evnt);
+                }
             });
         }
 
@@ -105,7 +106,7 @@ namespace ST10204902_PROG7312_POE
             // Filter by category if one is selected
             if (CategoryComboBox.SelectedItem is string category && !category.Equals("All categories"))
             {
-                filteredEvents = _eventSearcher.GetEventsByCategory(category);
+                filteredEvents = _eventRepository.GetEventsByCategory(category);
             }
             else
             {
@@ -116,7 +117,7 @@ namespace ST10204902_PROG7312_POE
             // Apply search filter if there is text in the search box
             if (!string.IsNullOrEmpty(SearchTextBox.Text))
             {
-                var searchResults = _eventSearcher.SearchEvents(SearchTextBox.Text).Result;
+                var searchResults = _eventRepository.SearchEvents(SearchTextBox.Text).Result;
 
                 // If a category filter is applied, intersect with search results
                 if (filteredEvents.Any())
@@ -129,15 +130,17 @@ namespace ST10204902_PROG7312_POE
                 }
             }
 
-            // Update the observable collection with the filtered results
-            Events.Clear();
-
-            Events = new ObservableCollection<Event>();
-            foreach (var ev in filteredEvents)
+            // Update the UI with the filtered events
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                Events.Add(ev);
-            }
-            Console.Write(Events);
+                Events.Clear();
+                foreach (var ev in filteredEvents)
+                {
+                    Events.Add(ev);
+                }
+            });
+
+            
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

@@ -1,17 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EventScraper
 {
     public interface IEventRepository
     {
+        // Method to add a new event
         Task AddEventAsync(Event evnt);
-        Task<List<Event>> GetEventsByDateAsync(DateTime date);
+
+        // Method to get all events
         Task<List<Event>> GetAllEventsAsync();
 
+        // Method to get events by category
+        List<Event> GetEventsByCategory(string category);
+
+        // Method to search for events based on a query string
+        Task<List<Event>> SearchEvents(string query);
+
+        // Method to get events by date
+        Task<bool> EventExistsAsync(string title, DateTime date);
+
+        // Event to notify when a new event is added
         event EventHandler<Event> EventAdded;
     }
 }

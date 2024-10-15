@@ -173,11 +173,18 @@ namespace EventScraper
             if (IsInternetAvailable())
             {
                 var eventUrls = await GetEventLinksAsync();
-
+                HashSet<Event> events = new HashSet<Event>();
                 await foreach (var evnt in ScrapeEventDetailsAsync(eventUrls))
                 {
-                    // Add event to the repository as soon as it's scraped
-                    await _eventRepository.AddEventAsync(evnt);
+                    if (!await _eventRepository.EventExistsAsync(evnt.Title, evnt.Date))
+                    {
+                        await _eventRepository.AddEventAsync(evnt);
+                        Console.WriteLine("Event added: " + evnt.Title);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Event already exists: " + evnt.Title);
+                    }
                 }
             }
             else

@@ -44,12 +44,8 @@ namespace ST10204902_PROG7312_POE
             services.AddSingleton<MainWindow>();
             services.AddSingleton<ReportIssues>();
 
-            // Register the new EventService to manage shared event operations
-            services.AddSingleton<IEventService, EventService>();
-
             // Use the EventService in EventRepository and EventSearcher
             services.AddSingleton<IEventRepository, EventRepository>();
-            services.AddTransient<IEventSearcher, EventSearcher>();
         }
 
         private static void CheckEventCSV(IServiceProvider serviceProvider)
