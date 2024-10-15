@@ -199,6 +199,9 @@
     <Folder Include="Data\" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="AppImages\unavailable.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="AppImages\CoCTLogoCropped.png" />
     <Content Include="AppImages\CoctLogoAnimated.mp4">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

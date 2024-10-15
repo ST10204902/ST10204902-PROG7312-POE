@@ -17,6 +17,7 @@ namespace ST10204902_PROG7312_POE
         // Variable Declaration
         public IServiceProvider ServiceProvider { get; private set; }
 
+        //----------------------------------------------------------------
         /// <summary>
         /// Start the application with the main window
         /// </summary>
@@ -33,6 +34,7 @@ namespace ST10204902_PROG7312_POE
             mainWindow.Show();
         }
 
+        //----------------------------------------------------------------
         /// <summary>
         /// Configure the services for the application
         /// </summary>
@@ -48,6 +50,11 @@ namespace ST10204902_PROG7312_POE
             services.AddSingleton<IEventRepository, EventRepository>();
         }
 
+        //----------------------------------------------------------------
+        /// <summary>
+        /// Try to scrape the events from the website
+        /// </summary>
+        /// <param name="serviceProvider"></param>
         private static void CheckEventCSV(IServiceProvider serviceProvider)
         {
             Task.Run(async () =>
@@ -73,3 +80,4 @@ namespace ST10204902_PROG7312_POE
         }
     }
 }
+//-------------------------------EOF---------------------------------

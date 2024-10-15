@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace EventScraper
 {
+    /// <summary>
+    /// Interface for the Event Repository
+    /// </summary>
     public interface IEventRepository
     {
         // Method to add a new event

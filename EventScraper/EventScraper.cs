@@ -13,15 +13,23 @@ namespace EventScraper
 {
     public class EventScraper
     {
+        //----------------------------------------------------------------
+        // Variables
         private readonly string _rootUrl;
         private readonly IEventRepository _eventRepository;
 
+        /// <summary>
+        /// Parameterized constructor
+        /// </summary>
+        /// <param name="rootUrl"></param>
+        /// <param name="eventRepository"></param>
         public EventScraper(string rootUrl, IEventRepository eventRepository)
         {
             _rootUrl = rootUrl;
             _eventRepository = eventRepository;
         }
 
+        //----------------------------------------------------------------
         /// <summary>
         /// Check if there is a working internet connection
         /// </summary>
@@ -42,6 +50,7 @@ namespace EventScraper
             }
         }
 
+        //----------------------------------------------------------------
         /// <summary>
         /// Scrapes the root page to get individual event URLs
         /// </summary>
@@ -79,12 +88,12 @@ namespace EventScraper
             }
         }
 
+        //----------------------------------------------------------------
         /// <summary>
         /// Scrapes the event details from the individual event pages
         /// </summary>
         /// <param name="eventUrls"></param>
         /// <returns>List of event objects containing the details</returns>
-        // EventScraper.cs
         public async IAsyncEnumerable<Event> ScrapeEventDetailsAsync(List<string> eventUrls)
         {
             string[] formats = { "d MMMM yyyy", "MMMM d, yyyy", "yyyy-MM-dd" }; // Add more formats as needed
@@ -153,6 +162,7 @@ namespace EventScraper
                         Website = HtmlEntity.DeEntitize(websiteNode?.InnerText.Trim() ?? "N/A"),
                         Venue = venue,
                         ImageUrl = imageUrl,
+                        EventURL = url,
                         Category = HtmlEntity.DeEntitize(categoryNode?.InnerText.Trim() ?? "N/A")
                     };
 
@@ -164,7 +174,8 @@ namespace EventScraper
 
 
         /// <summary>
-        /// Scrape the event details and store them in memory
+        /// Scrape the event details and store them in Event Repository
+        /// Fallback to CSV file if no internet connection is available
         /// </summary>
         /// <returns> </returns>
         /// <exception cref="InvalidOperationException"></exception>
@@ -179,11 +190,6 @@ namespace EventScraper
                     if (!await _eventRepository.EventExistsAsync(evnt.Title, evnt.Date))
                     {
                         await _eventRepository.AddEventAsync(evnt);
-                        Console.WriteLine("Event added: " + evnt.Title);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Event already exists: " + evnt.Title);
                     }
                 }
             }
@@ -260,3 +266,4 @@ namespace EventScraper
         }
     }
 }
+//----------------------------EOF------------------------------------

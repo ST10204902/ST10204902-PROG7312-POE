@@ -34,54 +34,10 @@ namespace ST10204902_PROG7312_POE
 
             _issueRepository = issueRepository;
             _eventRepository = eventRepository;
-            _serviceProvider = serviceProvider;
-            
-
-            LoadEventsAsync();
-
-            Console.WriteLine("MainWindow constructor called");
-            Console.WriteLine($"Issue Repository: {_issueRepository != null}");
-            Console.WriteLine($"Service Provider: {_serviceProvider != null}");
-            Console.WriteLine($"Event Repository: {_eventRepository != null}");
-            
+            _serviceProvider = serviceProvider;       
         }
 
-        private async Task LoadEventsAsync()
-        {
-            bool retry = true;
-
-            while (retry)
-            {
-                try
-                {
-                    await Task.Delay(10000);
-                    
-                    var allEvents = await _eventRepository.GetAllEventsAsync();
-
-                    Console.WriteLine("All Events: ");
-                    foreach (var ev in allEvents)
-                    {
-                        Console.WriteLine(ev.ToString());
-                    }
-
-                    retry = false; // Exit the loop if successful
-                }
-                catch (InvalidOperationException ex)
-                {
-                    var result = MessageBox.Show(
-                        "No internet connection and no local events.csv file found. \r\nPlease connect to the internet and press OK to try again.",
-                        "Error",
-                        MessageBoxButton.OKCancel,
-                        MessageBoxImage.Error
-                    );
-
-                    if (result == MessageBoxResult.Cancel)
-                    {
-                        retry = false; // Exit the loop if the user cancels
-                    }
-                }
-            }
-        }
+       
 
         //---------------------------------------------------------
         /// <summary>
@@ -172,6 +128,12 @@ namespace ST10204902_PROG7312_POE
             }
         }
 
+        //----------------------------------------------------------------
+        /// <summary>
+        /// View Issues button click event handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnViewIssues_Click(object sender, RoutedEventArgs e)
         {
             ViewReportedIssues viewReportedIssues = new ViewReportedIssues(this, _issueRepository);
@@ -179,17 +141,35 @@ namespace ST10204902_PROG7312_POE
             this.Hide();
         }
 
+        //----------------------------------------------------------------
+        /// <summary>
+        /// Event handler for when the media fails to load
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void videoPlayer_MediaFailed(object sender, ExceptionRoutedEventArgs e)
         {
             MessageBox.Show($"Media failed to load: {e.ErrorException.Message}");
         }
 
+        //----------------------------------------------------------------
+        /// <summary>
+        /// Restart the video when it ends
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void videoPlayer_MediaEnded(object sender, RoutedEventArgs e)
         {
             videoPlayer.Position = TimeSpan.Zero;
             videoPlayer.Play();
         }
 
+        //----------------------------------------------------------------
+        /// <summary>
+        /// Local Events button click event handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void btnLocalEvents_Click(object sender, RoutedEventArgs e)
         {
             ViewEvents viewEvents = new ViewEvents(_eventRepository,  this);
