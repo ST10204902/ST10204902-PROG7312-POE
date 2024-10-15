@@ -1,0 +1,143 @@
+﻿<Window
+    x:Class="ST10204902_PROG7312_POE.ViewEvents"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:components="clr-namespace:ST10204902_PROG7312_POE.Components"
+    xmlns:converters="clr-namespace:ST10204902_PROG7312_POE.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ST10204902_PROG7312_POE"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    Title="View Events"
+    MinWidth="600"
+    MinHeight="450"
+    ui:WindowHelper.UseModernWindowStyle="True"
+    Closing="Window_Closing"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <converters:YearMonthGroupConverter x:Key="YearMonthGroupConverter" />
+        <CollectionViewSource x:Key="GroupedEvents" Source="{Binding Events}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription Converter="{StaticResource YearMonthGroupConverter}" PropertyName="Date" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <ScrollViewer
+            Name="OuterScrollViewer"
+            Grid.Column="0"
+            VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Image
+                    Grid.Row="0"
+                    Width="50"
+                    Height="50"
+                    Margin="10,10,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Source="AppImages/CoCTLogoCropped.png"
+                    Stretch="Uniform" />
+                <TextBlock
+                    Grid.Row="0"
+                    Margin="80,15,0,0"
+                    FontSize="24"
+                    FontWeight="Bold"
+                    Text="View Events in Cape Town" />
+
+                <!--  Title  -->
+                <TextBlock
+                    Grid.Row="1"
+                    Margin="10,0,0,0"
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Text="Events" />
+
+                <!--  Events Grouped by Month  -->
+                <ItemsControl Grid.Row="2" ItemsSource="{Binding Source={StaticResource GroupedEvents}, Path=Groups}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Expander
+                                Margin="10"
+                                Header="{Binding Name}"
+                                IsExpanded="True">
+                                <ItemsControl ItemsSource="{Binding Items}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <components:EventCard />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Expander>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </ScrollViewer>
+
+        <Border
+            Grid.Column="1"
+            Margin="10"
+            BorderBrush="Gray"
+            BorderThickness="1"
+            CornerRadius="5">
+            <!--  Stack Panel containing search, filter and sort for events  -->
+            <ui:SimpleStackPanel Margin="10" HorizontalAlignment="Stretch">
+                <!--  Search bar  -->
+                <TextBox
+                    Name="SearchTextBox"
+                    Width="150"
+                    Margin="0,10,0,10"
+                    ui:ControlHelper.PlaceholderText="Search events..." />
+
+                <!--  Sort by Dropdown  -->
+                <ComboBox
+                    Name="SortByComboBox"
+                    Width="150"
+                    Margin="10"
+                    SelectedIndex="0">
+                    <ComboBoxItem Content="Sort by Date (Asc)" />
+                    <ComboBoxItem Content="Sort by Date (Desc)" />
+                    <ComboBoxItem Content="Sort by Title (Asc)" />
+                    <ComboBoxItem Content="Sort by Title (Desc)" />
+                    <ComboBoxItem Content="Sort by Venue (Asc)" />
+                    <ComboBoxItem Content="Sort by Venue (Desc)" />
+                </ComboBox>
+
+                <!--  Category dropdown  -->
+                <ComboBox
+                    Name="CategoryComboBox"
+                    Width="150"
+                    Margin="10"
+                    SelectedIndex="0" />
+
+                <!--  Filter Button  -->
+                <Button
+                    Name="FilterButton"
+                    Width="150"
+                    Margin="10"
+                    Click="FilterButton_Click"
+                    Content="Filter" />
+            </ui:SimpleStackPanel>
+        </Border>
+    </Grid>
+</Window>

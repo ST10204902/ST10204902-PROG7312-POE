@@ -5,6 +5,8 @@ VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ST10204902 PROG7312 POE", "ST10204902 PROG7312 POE\ST10204902 PROG7312 POE.csproj", "{35A803E9-212F-48B0-A2DC-96282387EB8E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventScraper", "EventScraper\EventScraper.csproj", "{AC414B31-A648-416A-8727-775F3008B8DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{35A803E9-212F-48B0-A2DC-96282387EB8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35A803E9-212F-48B0-A2DC-96282387EB8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35A803E9-212F-48B0-A2DC-96282387EB8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC414B31-A648-416A-8727-775F3008B8DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC414B31-A648-416A-8727-775F3008B8DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC414B31-A648-416A-8727-775F3008B8DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC414B31-A648-416A-8727-775F3008B8DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

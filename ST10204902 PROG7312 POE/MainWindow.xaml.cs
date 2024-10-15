@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
+using EventScraper;
+using Microsoft.Extensions.DependencyInjection;
 using ST10204902_PROG7312_POE.Models;
 
 namespace ST10204902_PROG7312_POE
@@ -15,21 +19,70 @@ namespace ST10204902_PROG7312_POE
         //---------------------------------------------------------
         // Variable Declaration
         private readonly IIssueRepository _issueRepository;
+
         private readonly IServiceProvider _serviceProvider;
+        private readonly IEventRepository _eventRepository;
+        private bool _isExitConfirmed = false;
 
         //---------------------------------------------------------
         /// <summary>
         /// Parameterized constructor
         /// </summary>
         /// <param name="issueRepository"></param>
-        public MainWindow(IIssueRepository issueRepository, IServiceProvider serviceProvider)
+        public MainWindow(IIssueRepository issueRepository, IEventRepository eventRepository, IServiceProvider serviceProvider)
         {
             InitializeComponent();
 
             _issueRepository = issueRepository;
+            _eventRepository = eventRepository;
             _serviceProvider = serviceProvider;
+
+            LoadEventsAsync();
+
+            Console.WriteLine("MainWindow constructor called");
+            Console.WriteLine($"Issue Repository: {_issueRepository != null}");
+            Console.WriteLine($"Service Provider: {_serviceProvider != null}");
+            Console.WriteLine($"Event Repository: {_eventRepository != null}");
+            
         }
-        
+
+        private async Task LoadEventsAsync()
+        {
+            bool retry = true;
+
+            while (retry)
+            {
+                try
+                {
+                    await Task.Delay(10000);
+                    
+                    var allEvents = await _eventRepository.GetAllEventsAsync();
+
+                    Console.WriteLine("All Events: ");
+                    foreach (var ev in allEvents)
+                    {
+                        Console.WriteLine(ev.ToString());
+                    }
+
+                    retry = false; // Exit the loop if successful
+                }
+                catch (InvalidOperationException ex)
+                {
+                    var result = MessageBox.Show(
+                        "No internet connection and no local events.csv file found. \r\nPlease connect to the internet and press OK to try again.",
+                        "Error",
+                        MessageBoxButton.OKCancel,
+                        MessageBoxImage.Error
+                    );
+
+                    if (result == MessageBoxResult.Cancel)
+                    {
+                        retry = false; // Exit the loop if the user cancels
+                    }
+                }
+            }
+        }
+
         //---------------------------------------------------------
         /// <summary>
         /// Report Issues button click event handler
@@ -63,8 +116,7 @@ namespace ST10204902_PROG7312_POE
         /// <param name="e"></param>
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Storyboard fadeInStoryboard = (Storyboard)FindResource("FadeInStoryboard");
-            fadeInStoryboard.Begin();
+            videoPlayer.Play();
         }
 
         //---------------------------------------------------------
@@ -99,7 +151,11 @@ namespace ST10204902_PROG7312_POE
         /// <param name="e"></param>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            ConfirmExit();
+            if (!_isExitConfirmed)
+            {
+                e.Cancel = true;
+                ConfirmExit();
+            }
         }
 
         //---------------------------------------------------------
@@ -111,8 +167,35 @@ namespace ST10204902_PROG7312_POE
             MessageBoxResult result = MessageBox.Show("Are you sure you want to exit?", "Exit Municipal Service Application", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
+                _isExitConfirmed = true;
                 Application.Current.Shutdown();
             }
+        }
+
+        private void btnViewIssues_Click(object sender, RoutedEventArgs e)
+        {
+            ViewReportedIssues viewReportedIssues = new ViewReportedIssues(this, _issueRepository);
+            viewReportedIssues.Show();
+            this.Hide();
+        }
+
+        private void videoPlayer_MediaFailed(object sender, ExceptionRoutedEventArgs e)
+        {
+            MessageBox.Show($"Media failed to load: {e.ErrorException.Message}");
+        }
+
+        private void videoPlayer_MediaEnded(object sender, RoutedEventArgs e)
+        {
+            videoPlayer.Position = TimeSpan.Zero;
+            videoPlayer.Play();
+        }
+
+        private async void btnLocalEvents_Click(object sender, RoutedEventArgs e)
+        {
+            ViewEvents viewEvents = new ViewEvents(_eventRepository, this);
+            await viewEvents.LoadEventsAsync();
+            viewEvents.Show();
+            this.Hide();
         }
     }
 }

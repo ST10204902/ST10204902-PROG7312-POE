@@ -1,2 +1,13 @@
 ﻿- Data Validation for all fields
 - Mess around with ModernWpf more
+
+Border around progress bar
+CoCT Banner at top of each window + Heading for page
+Category and Date same row different column
+Primary buttons new colour
+
+EventScraper handling weird venues like sports fixtures
+Add heading to ViewEvents
+Search flyout
+Filter Flyout
+Sort combo box

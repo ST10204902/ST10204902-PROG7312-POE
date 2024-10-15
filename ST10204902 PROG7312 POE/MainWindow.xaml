@@ -7,32 +7,25 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
     xmlns:ui="http://schemas.modernwpf.com/2019"
+    xmlns:wv="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
     Title="Municipal Services"
     Width="350"
     Height="400"
-    MinWidth="350"
-    MinHeight="450"
+    MinWidth="360"
+    MinHeight="600"
     ui:WindowHelper.UseModernWindowStyle="True"
+    Closing="Window_Closing"
     Loaded="Window_Loaded"
     ResizeMode="CanResize"
     WindowStartupLocation="CenterScreen"
-    Closing="Window_Closing"
     mc:Ignorable="d">
-    <Window.Resources>
-        <Storyboard x:Key="FadeInStoryboard">
-            <DoubleAnimation
-                Storyboard.TargetName="imgMunicipalLogo"
-                Storyboard.TargetProperty="Opacity"
-                From="0"
-                To="1"
-                Duration="0:0:3" />
-        </Storyboard>
-    </Window.Resources>
 
-    <Grid>
+
+    <Grid Margin="20">
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.25*" />
+            <RowDefinition Height="50" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -46,27 +39,30 @@
             Grid.Row="0"
             Grid.RowSpan="2"
             Grid.Column="1"
-            Margin="20,0,0,0"
-            HorizontalAlignment="Left"
+            Margin="0,0,0,0"
+            HorizontalAlignment="Center"
             FontSize="20"
             FontWeight="Bold"
             Text="Municipal Services Main Menu" />
 
         <!--  Municipal Logo  -->
-        <Image
-            x:Name="imgMunicipalLogo"
+        <MediaElement
+            x:Name="videoPlayer"
             Grid.Row="1"
-            Grid.ColumnSpan="2"
-            Margin="4,4,4,4"
-            Source="AppImages/MunicipalLogo.png" />
-
+            HorizontalAlignment="Center"
+            VerticalAlignment="Stretch"
+            LoadedBehavior="Manual"
+            MediaEnded="videoPlayer_MediaEnded"
+            MediaFailed="videoPlayer_MediaFailed"
+            Source="AppImages/CoctLogoAnimated.mp4"
+            Stretch="Uniform"
+            UnloadedBehavior="Manual" />
 
         <!--  Report Issues Button  -->
         <Button
             x:Name="btnReportIssues"
             Grid.Row="2"
-            Grid.Column="1"
-            Margin="5,8,16,8"
+            Margin="16,8,16,8"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Click="btnReportIssues_Click"
@@ -86,25 +82,33 @@
             </ui:SimpleStackPanel>
         </Button>
 
-        <!--  Local Events Button (disabled)  -->
         <Button
-            Name="btnLocalEvents"
+            Name="btnViewIssues"
             Grid.Row="3"
-            Grid.Column="1"
-            Margin="5,8,16,8"
+            Margin="16,8,16,8"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
+            Click="btnViewIssues_Click"
+            Content="View Reported Issues"
+            ToolTip="View Reported issues in the municipality"
+            Visibility="Visible" />
+
+        <!--  Local Events Button  -->
+        <Button
+            Name="btnLocalEvents"
+            Grid.Row="4"
+            Margin="16,8,16,8"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Click="btnLocalEvents_Click"
             Content="Local Events and Announcements"
-            IsEnabled="False"
-            ToolTip="This feature is coming soon."
-            ToolTipService.ShowOnDisabled="True" />
+            ToolTip="See Local Events and Announcements in Cape Town" />
 
         <!--  Service Request Status Button (disabled)  -->
         <Button
             Name="btnServiceStatus"
-            Grid.Row="4"
-            Grid.Column="1"
-            Margin="5,8,16,8"
+            Grid.Row="5"
+            Margin="16,8,16,8"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Content="Service Request Status"
@@ -114,9 +118,8 @@
 
         <Button
             Name="btnFeedback"
-            Grid.Row="5"
-            Grid.Column="1"
-            Margin="5,8,16,8"
+            Grid.Row="6"
+            Margin="16,8,16,8"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Click="btnFeedback_Click"
@@ -127,9 +130,9 @@
         <!--  Exit Button  -->
         <Button
             Name="btnExit"
-            Grid.Row="6"
+            Grid.Row="7"
             Grid.Column="1"
-            Margin="5,8,16,16"
+            Margin="16,8,16,16"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Click="btnExit_Click"

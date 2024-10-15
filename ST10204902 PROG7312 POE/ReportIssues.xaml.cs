@@ -92,7 +92,7 @@ namespace ST10204902_PROG7312_POE
                     try
                     {
                         // Attempt to create a MediaAttachment instance
-                        MediaAttachment mediaAttachment = new MediaAttachment(System.IO.Path.GetFileName(filePath), filePath, typeof(object)); // Replace typeof(object) with actual type if known
+                        MediaAttachment mediaAttachment = new MediaAttachment(System.IO.Path.GetFileName(filePath), filePath, MediaAttachment.LoadFileData(filePath), typeof(object));
                         validFiles.Add(filePath);
                         // Add the media attachment to the current issue (assuming you have a currentIssue object)
                         await Task.Run(() => _currentIssue.AddMediaAttachment(mediaAttachment));
@@ -161,6 +161,7 @@ namespace ST10204902_PROG7312_POE
                 _currentIssue.Category = selectedItem.Content.ToString();
                 TextRange textRange = new TextRange(rtbDescription.Document.ContentStart, rtbDescription.Document.ContentEnd);
                 _currentIssue.Description = textRange.Text.Trim();
+                _currentIssue.DateOfIssue = dpDateOfIssue.SelectedDate.Value;
 
                 //Add the issue to the repository
                 _issueRepository.AddIssue(_currentIssue);
@@ -195,8 +196,14 @@ namespace ST10204902_PROG7312_POE
         /// <returns></returns>
         private bool FieldsAreEmpty()
         {
-            return !LocationSelected() && !DescriptionEntered() && !CategorySelected() && !MediaIsAttached();
+            if(!LocationSelected() && !DescriptionEntered() && !CategorySelected() && !MediaIsAttached() &&!DatePickedAndValid())
+            {
+                return true;
+            }
+            return false;
         }
+
+        
 
         //---------------------------------------------------------------------------------------
         /// <summary>
@@ -226,7 +233,25 @@ namespace ST10204902_PROG7312_POE
         /// <returns></returns>
         private bool CategorySelected()
         {
-            return cmbCategory.SelectedIndex != -1 || cmbCategory.SelectedItem != null;
+            return cmbCategory.SelectedIndex != -1;
+        }
+
+        //---------------------------------------------------------------------------------------
+        /// <summary>
+        /// Check if a date has been picked and is not in the future
+        /// </summary>
+        /// <returns></returns>
+        private bool DatePickedAndValid()
+        {
+            if(dpDateOfIssue.SelectedDate == null)
+            {
+                return false;
+            }
+            if(dpDateOfIssue.SelectedDate > DateTime.Now)
+            {
+                return false;
+            }
+            return true;
         }
 
         //---------------------------------------------------------------------------------------
@@ -248,10 +273,11 @@ namespace ST10204902_PROG7312_POE
         private int CalculateProgress()
         {
             int progress = 0;
-            if (LocationSelected()) progress += 25;
-            if (DescriptionEntered()) progress += 25;
-            if (CategorySelected()) progress += 25;
-            if (MediaIsAttached()) progress += 25;
+            if (LocationSelected()) progress += 20;
+            if (DescriptionEntered()) progress += 20;
+            if (CategorySelected()) progress += 20;
+            if (MediaIsAttached()) progress += 20;
+            if (DatePickedAndValid()) progress += 20;
             return progress;
         }
 
@@ -402,6 +428,18 @@ namespace ST10204902_PROG7312_POE
 
         //---------------------------------------------------------------------------------------
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void dpDateOfIssue_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            IssueDateValidationBrushUpdate();
+            UpdateProgressBar();
+        }
+
+        //---------------------------------------------------------------------------------------
+        /// <summary>
         /// Update the location validation brush
         /// </summary>
         private void LocationValidationBrushUpdate()
@@ -446,6 +484,27 @@ namespace ST10204902_PROG7312_POE
             {
                 rtbDescription.BorderBrush = Brushes.Green;
             }
+        }
+
+        //---------------------------------------------------------------------------------------
+        /// <summary>
+        /// Update the issue date validation brush
+        /// </summary>
+        private void IssueDateValidationBrushUpdate()
+        {
+            if (!DatePickedAndValid())
+            {
+                dpDateOfIssue.BorderBrush = Brushes.Red;
+            }
+            else
+            {
+                dpDateOfIssue.BorderBrush = Brushes.Green;
+            }
+        }
+
+        private void dpDateOfIssue_DateValidationError(object sender, DatePickerDateValidationErrorEventArgs e)
+        {
+            dpDateOfIssue.BorderBrush = Brushes.Red;
         }
     }
 }

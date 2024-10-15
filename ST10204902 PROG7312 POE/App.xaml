@@ -2,6 +2,7 @@
     x:Class="ST10204902_PROG7312_POE.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:ST10204902_PROG7312_POE.Converters"
     xmlns:local="clr-namespace:ST10204902_PROG7312_POE"
     xmlns:ui="http://schemas.modernwpf.com/2019">
 
@@ -11,6 +12,8 @@
                 <ui:ThemeResources />
                 <ui:XamlControlsResources />
             </ResourceDictionary.MergedDictionaries>
+            <converters:MediaAttachmentConverter x:Key="MediaAttachmentConverter" />
+            <converters:UrlToImageConverter x:Key="URLToMediaConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

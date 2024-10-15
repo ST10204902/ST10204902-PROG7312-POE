@@ -1,0 +1,43 @@
+﻿<UserControl
+    x:Class="ST10204902_PROG7312_POE.Components.IssueCard"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:ST10204902_PROG7312_POE"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    MinWidth="300"
+    MinHeight="300"
+    >
+    <UserControl.Resources>
+        <Style TargetType="Border">
+
+            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="5" />
+            <EventSetter Event="MouseLeftButtonUp" Handler="OnIssueCardClick" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="DarkGray" />
+                    <Setter Property="BorderBrush" Value="DarkGray" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Border Margin="5" Padding="10">
+        <StackPanel>
+            <!--  Media Preview  -->
+            <ContentControl Content="{Binding MediaAttachments[0], Converter={StaticResource MediaAttachmentConverter}}" />
+
+            <!--  Category  -->
+            <TextBlock
+                Margin="0,10,0,0"
+                FontWeight="Bold"
+                Text="{Binding Category}" />
+
+            <!--  Date of Issue  -->
+            <TextBlock Margin="0,5,0,0" Text="{Binding DateOfIssue, StringFormat='{}{0:MMMM dd, yyyy}'}" />
+
+            <!--  Media attachment count  -->
+            <TextBlock Margin="0,5,0,0" Text="{Binding MediaAttachmentCount, StringFormat='Attachments: {0}'}" />
+        </StackPanel>
+    </Border>
+</UserControl>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace ST10204902_PROG7312_POE.Models
         //Variables
         public string FileName { get; private set; }
         public string FilePath { get; private set; }
+        public byte[] FileData { get; private set; }
         public Type FileType { get; private set; }
 
         //---------------------------------------------------------
@@ -25,7 +27,7 @@ namespace ST10204902_PROG7312_POE.Models
         /// <param name="filePath"></param>
         /// <param name="fileType"></param>
         /// <exception cref="InvalidOperationException"></exception>
-        public MediaAttachment(string fileName, string filePath, Type fileType)
+        public MediaAttachment(string fileName, string filePath, byte[] fileData, Type fileType)
         {
             if (!ValidateFileType(filePath))
             {
@@ -33,6 +35,7 @@ namespace ST10204902_PROG7312_POE.Models
             }
 
             FileName = fileName;
+            FileData = fileData;
             FilePath = filePath;
             FileType = fileType;
         }
@@ -50,6 +53,17 @@ namespace ST10204902_PROG7312_POE.Models
             string extension = System.IO.Path.GetExtension(filePath);
             string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".pdf", ".docx", ".txt" };
             return allowedExtensions.Contains(extension.ToLower());
+        }
+
+        //---------------------------------------------------------
+        /// <summary>
+        /// Load the file data from the file path.
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public static byte[] LoadFileData(string filePath)
+        {
+            return File.ReadAllBytes(filePath);
         }
     } 
 }

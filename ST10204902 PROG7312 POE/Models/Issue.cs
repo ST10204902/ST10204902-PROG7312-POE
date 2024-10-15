@@ -17,7 +17,15 @@ namespace ST10204902_PROG7312_POE.Models
         public string Location { get; set; }
         public string Category { get; set; }
         public string Description { get; set; }
+        public DateTime Timestamp { get; private set; }
+        public DateTime DateOfIssue { get; set; }
         public List<MediaAttachment> MediaAttachments { get; private set; }
+
+        //---------------------------------------------------------
+        /// <summary>
+        /// Gets the count of media attachments.
+        /// </summary>
+        public int MediaAttachmentCount => MediaAttachments.Count;
 
         //---------------------------------------------------------
         /// <summary>
@@ -26,11 +34,13 @@ namespace ST10204902_PROG7312_POE.Models
         /// <param name="location"></param>
         /// <param name="category"></param>
         /// <param name="description"></param>
-        public Issue(string location, string category, string description)
+        public Issue(string location, string category, string description, DateTime dateOfIssue)
         {
             Location = location;
             Category = category;
             Description = description;
+            Timestamp = DateTime.Now;
+            DateOfIssue = dateOfIssue;
             MediaAttachments = new List<MediaAttachment>();
         }
 
@@ -41,6 +51,7 @@ namespace ST10204902_PROG7312_POE.Models
         public Issue()
         {
             MediaAttachments = new List<MediaAttachment>();
+            Timestamp = DateTime.Now;
         }
 
         //---------------------------------------------------------
@@ -72,5 +83,7 @@ namespace ST10204902_PROG7312_POE.Models
         {
             return MediaAttachments.Select(x => $"File: {x.FileName}, Type: {x.FileType.Name}");
         }
+
+        
     }
 }//---------------------------------EOF------------------------------------//

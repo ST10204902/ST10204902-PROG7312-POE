@@ -16,6 +16,7 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -43,6 +44,8 @@
     <Reference Include="netstandard" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -61,14 +64,45 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Components\EventCard.xaml.cs">
+      <DependentUpon>EventCard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\InputDialog.xaml.cs">
+      <DependentUpon>InputDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Components\IssueCard.xaml.cs">
+      <DependentUpon>IssueCard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Converters\MediaAttachmentConverter.cs" />
+    <Compile Include="Converters\UrlToImageConverter.cs" />
+    <Compile Include="Converters\YearMonthGroupConverter.cs" />
     <Compile Include="Models\FeedbackResponse.cs" />
     <Compile Include="Models\IIssueRepository.cs" />
     <Compile Include="Models\Issue.cs" />
     <Compile Include="Models\IssueRepository.cs" />
     <Compile Include="Models\MediaAttachment.cs" />
+    <Compile Include="Models\RelayCommand.cs" />
     <Compile Include="ReportIssues.xaml.cs">
       <DependentUpon>ReportIssues.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewEvents.xaml.cs">
+      <DependentUpon>ViewEvents.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewReportedIssues.xaml.cs">
+      <DependentUpon>ViewReportedIssues.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Components\EventCard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\InputDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Components\IssueCard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -86,6 +120,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ReportIssues.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewEvents.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewReportedIssues.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -109,6 +151,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.manifest" />
+    <None Include="AppImages\TrakitMobSF.pdf" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -124,8 +167,14 @@
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications">
       <Version>7.1.3</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.Web.WebView2">
+      <Version>1.0.2792.45</Version>
+    </PackageReference>
     <PackageReference Include="ModernWpfUI">
       <Version>0.9.6</Version>
+    </PackageReference>
+    <PackageReference Include="Pdfium.Net.SDK">
+      <Version>4.93.2704</Version>
     </PackageReference>
     <PackageReference Include="SharpVectors.Wpf">
       <Version>1.8.4.2</Version>
@@ -139,6 +188,21 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="TODO.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EventScraper\EventScraper.csproj">
+      <Project>{ac414b31-a648-416a-8727-775f3008b8db}</Project>
+      <Name>EventScraper</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="AppImages\CoCTLogoCropped.png" />
+    <Content Include="AppImages\CoctLogoAnimated.mp4">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
