@@ -101,7 +101,7 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Click="btnLocalEvents_Click"
-            Content="Local Events and Announcements"
+            Content="Local Events"
             ToolTip="See Local Events and Announcements in Cape Town" />
 
         <!--  Service Request Status Button (disabled)  -->
