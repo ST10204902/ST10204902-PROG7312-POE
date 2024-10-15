@@ -19,7 +19,7 @@ namespace ST10204902_PROG7312_POE
         //---------------------------------------------------------
         // Variable Declaration
         private readonly IIssueRepository _issueRepository;
-
+        private readonly IEventSearcher _eventSearcher;
         private readonly IServiceProvider _serviceProvider;
         private readonly IEventRepository _eventRepository;
         private bool _isExitConfirmed = false;
@@ -29,13 +29,14 @@ namespace ST10204902_PROG7312_POE
         /// Parameterized constructor
         /// </summary>
         /// <param name="issueRepository"></param>
-        public MainWindow(IIssueRepository issueRepository, IEventRepository eventRepository, IServiceProvider serviceProvider)
+        public MainWindow(IIssueRepository issueRepository, IEventRepository eventRepository, IServiceProvider serviceProvider, IEventSearcher eventSearcher)
         {
             InitializeComponent();
 
             _issueRepository = issueRepository;
             _eventRepository = eventRepository;
             _serviceProvider = serviceProvider;
+            _eventSearcher = eventSearcher;
 
             LoadEventsAsync();
 
@@ -192,7 +193,7 @@ namespace ST10204902_PROG7312_POE
 
         private async void btnLocalEvents_Click(object sender, RoutedEventArgs e)
         {
-            ViewEvents viewEvents = new ViewEvents(_eventRepository, this);
+            ViewEvents viewEvents = new ViewEvents(_eventRepository, _eventSearcher, this);
             await viewEvents.LoadEventsAsync();
             viewEvents.Show();
             this.Hide();

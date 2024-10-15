@@ -16,7 +16,6 @@ namespace ST10204902_PROG7312_POE
         //---------------------------------------------------------
         // Variable Declaration
         public IServiceProvider ServiceProvider { get; private set; }
-        public EventRepository EventRepository { get; private set; }
 
         /// <summary>
         /// Start the application with the main window
@@ -32,7 +31,6 @@ namespace ST10204902_PROG7312_POE
 
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
-            
         }
 
         /// <summary>
@@ -41,10 +39,15 @@ namespace ST10204902_PROG7312_POE
         /// <param name="services"></param>
         private void ConfigureServices(IServiceCollection services)
         {
+            // Register your application's services here
             services.AddSingleton<IIssueRepository, IssueRepository>();
             services.AddSingleton<MainWindow>();
             services.AddSingleton<ReportIssues>();
 
+            // Register the new EventService to manage shared event operations
+            services.AddSingleton<IEventService, EventService>();
+
+            // Use the EventService in EventRepository and EventSearcher
             services.AddSingleton<IEventRepository, EventRepository>();
             services.AddTransient<IEventSearcher, EventSearcher>();
         }
@@ -74,5 +77,3 @@ namespace ST10204902_PROG7312_POE
         }
     }
 }
-
-//----------------------------------EOF------------------------------

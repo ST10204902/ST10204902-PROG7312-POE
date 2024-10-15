@@ -8,31 +8,31 @@ namespace EventScraper
 {
     public class EventRepository : IEventRepository
     {
-        private readonly Lazy<IEventSearcher> _eventSearcher;
+        private readonly IEventSearcher _eventSearcher;
 
         public event EventHandler<Event> EventAdded;
 
-        public EventRepository(Lazy<IEventSearcher> eventSearcher)
+        public EventRepository(IEventSearcher eventSearcher)
         {
             _eventSearcher = eventSearcher;
         }
 
         public Task AddEventAsync(Event evnt)
         {
-            _eventSearcher.Value.AddEvent(evnt);
+            _eventSearcher.AddEvent(evnt);
             EventAdded?.Invoke(this, evnt);
             return Task.CompletedTask;
         }
 
         public Task<List<Event>> GetEventsByDateAsync(DateTime date)
         {
-            var events = _eventSearcher.Value.GetEventsByDate(date);
+            var events = _eventSearcher.GetEventsByDate(date);
             return Task.FromResult(events);
         }
 
         public Task<List<Event>> GetAllEventsAsync()
         {
-            var events = _eventSearcher.Value.GetAllEvents();
+            var events = _eventSearcher.GetAllEvents();
             return Task.FromResult(events);
         }
     }

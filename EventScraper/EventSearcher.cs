@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EventScraper
 {
-    public class EventSearcher: IEventSearcher
+    public class EventSearcher : IEventSearcher
     {
-        private SortedDictionary<DateTime, List<Event>> _eventsByDate = new SortedDictionary<DateTime, List<Event>>();
-        private SortedDictionary<string, List<Event>> _eventsByCategory = new SortedDictionary<string, List<Event>>();
+        private readonly SortedDictionary<DateTime, List<Event>> _eventsByDate = new SortedDictionary<DateTime, List<Event>>();
+        private readonly SortedDictionary<string, List<Event>> _eventsByCategory = new SortedDictionary<string, List<Event>>();
 
-        private readonly IEventRepository _eventRepository;
+        private readonly IEventService _eventService;
 
-        public EventSearcher(IEventRepository eventRepository)
+        public EventSearcher(IEventService eventService)
         {
-            _eventRepository = eventRepository;
-            var result = Task.Run(eventRepository.GetAllEventsAsync).Result;
-            foreach(var ev in result)
+            _eventService = eventService;
+
+            // Initialize event storage
+            var result = Task.Run(eventService.GetAllEventsAsync).Result;
+            foreach (var ev in result)
             {
                 AddEvent(ev);
             }
@@ -25,13 +26,14 @@ namespace EventScraper
 
         public void AddEvent(Event evnt)
         {
-            //Add to events by date
+            // Add to events by date
             if (!_eventsByDate.ContainsKey(evnt.Date))
             {
                 _eventsByDate[evnt.Date] = new List<Event>();
             }
             _eventsByDate[evnt.Date].Add(evnt);
 
+            // Add to events by category if applicable
             if (!string.IsNullOrEmpty(evnt.Category))
             {
                 if (!_eventsByCategory.ContainsKey(evnt.Category))
@@ -44,16 +46,16 @@ namespace EventScraper
 
         public async Task<List<Event>> SearchEvents(string query)
         {
-            //Sorted dictionary acting as a priority queue
-            //where the int key is the priority value
-            //The value is a list of all events with that priority level
+            // Sorted dictionary acting as a priority queue
+            // where the int key is the priority value
+            // and the value is a list of all events with that priority level
             SortedDictionary<int, List<Event>> priorityQueue = new SortedDictionary<int, List<Event>>();
 
-            var allEvents = await _eventRepository.GetAllEventsAsync();
+            var allEvents = await _eventService.GetAllEventsAsync();
 
             foreach (var ev in allEvents)
             {
-                int priority = CalculatePriority( query, ev);
+                int priority = CalculatePriority(query, ev);
 
                 if (!priorityQueue.ContainsKey(priority))
                 {
@@ -81,16 +83,18 @@ namespace EventScraper
                 priority += 10;
             }
 
-            if(ev.Description.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
+            if (ev.Description.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 priority += 5;
             }
 
-            var daysTilEvent = (ev.Date - DateTime.Now).Days;
-            if(daysTilEvent >= 0)
+            // Events happening sooner get higher priority
+            var daysUntilEvent = (ev.Date - DateTime.Now).Days;
+            if (daysUntilEvent >= 0)
             {
-                priority+=Math.Max(0,10 - daysTilEvent); //Events happening sooner get higher priority
+                priority += Math.Max(0, 10 - daysUntilEvent);
             }
+
             return priority;
         }
 

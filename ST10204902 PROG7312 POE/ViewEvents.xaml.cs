@@ -11,11 +11,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace ST10204902_PROG7312_POE
 {
@@ -25,7 +20,7 @@ namespace ST10204902_PROG7312_POE
     public partial class ViewEvents : Window, INotifyPropertyChanged
     {
         private readonly IEventRepository _eventRepository;
-        private readonly EventSearcher _eventSearcher;
+        private readonly IEventSearcher _eventSearcher;
         private readonly MainWindow _mainWindow;
         private ObservableCollection<Event> _events;
 
@@ -39,18 +34,21 @@ namespace ST10204902_PROG7312_POE
             }
         }
 
-        public ViewEvents(IEventRepository eventRepository, MainWindow mainWindow)
+        public ViewEvents(IEventRepository eventRepository ,IEventSearcher eventSearcher, MainWindow mainWindow)
         {
             InitializeComponent();
             _eventRepository = eventRepository;
+            _eventSearcher = eventSearcher;
+            
             _mainWindow = mainWindow;
-            _eventSearcher = new EventSearcher(eventRepository);
+
             Events = new ObservableCollection<Event>();
             DataContext = this;
 
             _eventRepository.EventAdded += OnEventAdded;
 
             Task.Run(LoadEventsAsync);
+            Console.WriteLine(Events);
         }
 
         public async Task LoadEventsAsync()
@@ -98,32 +96,48 @@ namespace ST10204902_PROG7312_POE
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
+
+        //TODO: FIX THIS
         private void FilterButton_Click(object sender, RoutedEventArgs e)
         {
-            if(CategoryComboBox.SelectedItem is string category)
+            var filteredEvents = new List<Event>();
+
+            // Filter by category if one is selected
+            if (CategoryComboBox.SelectedItem is string category && !category.Equals("All categories"))
             {
-                if (category.Equals("All categories"))
+                filteredEvents = _eventSearcher.GetEventsByCategory(category);
+            }
+            else
+            {
+                // If no category is selected or "All categories" is selected, get all events
+                filteredEvents = _eventRepository.GetAllEventsAsync().Result;
+            }
+
+            // Apply search filter if there is text in the search box
+            if (!string.IsNullOrEmpty(SearchTextBox.Text))
+            {
+                var searchResults = _eventSearcher.SearchEvents(SearchTextBox.Text).Result;
+
+                // If a category filter is applied, intersect with search results
+                if (filteredEvents.Any())
                 {
-                    Task.Run(LoadEventsAsync);
+                    filteredEvents = filteredEvents.Intersect(searchResults).ToList();
                 }
                 else
                 {
-                    var events = _eventSearcher.GetEventsByCategory(category);
-                    Events = new ObservableCollection<Event>(events);
+                    filteredEvents = searchResults;
                 }
             }
 
-            if (!string.IsNullOrEmpty(SearchTextBox.Text))
-            {
-                SearchEvents(SearchTextBox.Text);
-            }
-            
-        }
+            // Update the observable collection with the filtered results
+            Events.Clear();
 
-        private void SearchEvents(string query)
-        {
-            var searchResults = _eventSearcher.SearchEvents(query);
-            Events = new ObservableCollection<Event>(searchResults.Result);
+            Events = new ObservableCollection<Event>();
+            foreach (var ev in filteredEvents)
+            {
+                Events.Add(ev);
+            }
+            Console.Write(Events);
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
