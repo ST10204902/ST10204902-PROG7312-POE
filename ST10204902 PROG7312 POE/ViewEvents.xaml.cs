@@ -1,16 +1,12 @@
 ﻿using EventScraper;
-using ST10204902_PROG7312_POE.Components;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 
 namespace ST10204902_PROG7312_POE
 {
@@ -22,6 +18,7 @@ namespace ST10204902_PROG7312_POE
         //----------------------------------------------------------------
         //Variable Declaration
         private readonly IEventRepository _eventRepository;
+
         private readonly MainWindow _mainWindow;
         private ObservableCollection<Event> _events;
         private List<string> _searchTerms;
@@ -147,19 +144,16 @@ namespace ST10204902_PROG7312_POE
             if (!string.IsNullOrEmpty(SearchTextBox.Text))
             {
                 var searchResults = _eventRepository.SearchEvents(SearchTextBox.Text).Result;
-                if(searchResults!= null && searchResults.Count > 0)
+                if (searchResults != null && searchResults.Count > 0)
                 {
                     // Add search term to list of search terms
                     _searchTerms.Add(SearchTextBox.Text);
 
-                    // Update the UI with the search results
-                    UpdateEventList(searchResults);
-
-                    // Add "Recommended" section
-                    AddRecommendedExpander();
-
-                    // Add or update "Search Results" section
+                    // Add or update "Search Results" section without modifying the main Events list
                     UpdateSearchResultsExpander(searchResults);
+
+                    // Update "Recommended" section
+                    UpdateRecommendedExpander();
                 }
                 else
                 {
@@ -167,7 +161,6 @@ namespace ST10204902_PROG7312_POE
 
                     await ClearAll();
                 }
-                
             }
         }
 
@@ -283,50 +276,54 @@ namespace ST10204902_PROG7312_POE
         /// <summary>
         /// Helper method to add the recommended events to the "Recommended" expander
         /// </summary>
-        private void AddRecommendedExpander()
+        private void UpdateRecommendedExpander()
         {
-            // Create a priority queue to determine the recommended events
-            var priorityQueue = new SortedDictionary<int, List<Event>>();
+            // Use a dictionary to keep track of accumulated event priority values
+            var priorityDict = new Dictionary<Event, int>();
 
+            //Iterate over search terms and add event priorities
             foreach (var searchTerm in _searchTerms)
             {
                 var searchResults = _eventRepository.SearchEvents(searchTerm).Result;
+
                 foreach (var ev in searchResults)
                 {
                     int priority = CalculatePriority(searchTerm, ev);
-                    if (!priorityQueue.ContainsKey(priority))
+
+                    //If event already exists in the dictionary, increase its priority
+                    if (priorityDict.ContainsKey(ev))
                     {
-                        priorityQueue[priority] = new List<Event>();
+                        priorityDict[ev] += priority;
                     }
-                    priorityQueue[priority].Add(ev);
+                    else
+                    {
+                        //If it doesn't exist, add event with priority value
+                        priorityDict[ev] = priority;
+                    }
                 }
             }
 
-            // Get the top 5 recommended events
-            var recommendedEvents = new List<Event>();
-            foreach (var kvp in priorityQueue.Reverse())
-            {
-                recommendedEvents.AddRange(kvp.Value);
-                if (recommendedEvents.Count >= 5)
-                {
-                    break;
-                }
-            }
+            //Get top 5 recommended events based on priority
+            var recommendedEvents = priorityDict
+                .OrderBy(kvp => kvp.Value)
+                .Take(5)
+                .Select(kvp => kvp.Key)
+                .ToList();
 
-            recommendedEvents = recommendedEvents.Take(5).ToList();
-
-            // Update the content of the "Recommended" expander in the UI
+            //Update content of recommended expander in UI
             Application.Current.Dispatcher.Invoke(() =>
             {
-                // Set the ItemsSource for the recommended events ItemsControl
                 RecommendedItemsControl.ItemsSource = recommendedEvents;
-            });
+
+                RecommendedExpander.IsExpanded = true;
+            }
+            );
         }
 
         //----------------------------------------------------------------
         /// <summary>
         /// Calculate the priority of an event based on the search term
-        /// Priority is based on the number of matches in the event's title and description
+        /// Priority is based on the number of matches in the event's title, venue and description
         /// </summary>
         /// <param name="searchTerm"></param>
         /// <param name="ev"></param>
@@ -337,17 +334,25 @@ namespace ST10204902_PROG7312_POE
 
             if (ev.Title.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0)
             {
+                priority += 16;
+            }
+
+            if (ev.Venue.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0)
+            {
                 priority += 10;
             }
 
             if (ev.Description.IndexOf(searchTerm, StringComparison.OrdinalIgnoreCase) >= 0)
             {
-                priority += 5;
+                priority += 3;
             }
+
+            Console.WriteLine("Priority: " + priority + " " + ev.ToString());
 
             return priority;
         }
 
+        //--------------------------------------------------------------------
         /// <summary>
         /// Window closing event handler, return to mainWindow
         /// </summary>
@@ -358,6 +363,7 @@ namespace ST10204902_PROG7312_POE
             _mainWindow.Show();
         }
 
+        //--------------------------------------------------------------------
         /// <summary>
         /// Clear the search results and close the expanders
         /// Reload events
@@ -369,8 +375,46 @@ namespace ST10204902_PROG7312_POE
             await ClearAll();
         }
 
-
+        //--------------------------------------------------------------------
+        /// <summary>
+        /// Clears all data input fields and search results
+        /// </summary>
+        /// <returns></returns>
         private async Task ClearAll()
+        {
+            // Clear the search text, category selection, and sort selection
+            SearchTextBox.Text = string.Empty;
+            CategoryComboBox.SelectedIndex = 0;
+            SortByComboBox.SelectedIndex = 0;
+
+            SearchResults.IsExpanded = false;
+            
+            SearchItemsControl.ItemsSource = null;
+
+            _eventKeys.Clear();
+            await LoadEventsAsync();
+        }
+
+        private async void ResetButton_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show(
+        "Are you sure you want to reset everything? This will remove all recommended events and reset all settings.",
+        "Confirm Reset",
+        MessageBoxButton.YesNo,
+        MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                await ResetAll();
+            }
+        }
+
+        //--------------------------------------------------------------------
+        /// <summary>
+        /// Method to reset all settings, search results, recommendations, and events
+        /// </summary>
+        /// <returns></returns>
+        private async Task ResetAll()
         {
             // Clear the search text, category selection, and sort selection
             SearchTextBox.Text = string.Empty;
@@ -394,4 +438,5 @@ namespace ST10204902_PROG7312_POE
         }
     }
 }
+
 //-------------------------------EOF---------------------------------

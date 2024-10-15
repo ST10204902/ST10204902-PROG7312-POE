@@ -9,8 +9,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.modernwpf.com/2019"
     Title="View Events"
-    MinWidth="600"
-    MinHeight="450"
+    MinWidth="650"
+    MinHeight="500"
     ui:WindowHelper.UseModernWindowStyle="True"
     Closing="Window_Closing"
     mc:Ignorable="d">
@@ -203,7 +203,15 @@
                     Margin="10"
                     Click="ClearButton_Click"
                     Content="Clear" />
+                <Button
+                    Name="ResetButton"
+                    Width="150"
+                    Margin="10"
+                    VerticalAlignment="Bottom"
+                    Click="ResetButton_Click"
+                    Content="Reset All" />
             </StackPanel>
+
         </Border>
     </Grid>
 </Window>
