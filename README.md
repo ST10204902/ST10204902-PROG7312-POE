@@ -23,15 +23,15 @@ This project is a WPF application designed to allow users to report issues relat
 ## Getting Started
 
 ### Prerequisites
-- Visual Studio
-- .NET Framework
+- Visual Studio Code 2022
+- .NET 4.8
 
 ### Installation
 1. Clone the repository:
     ```bash
     git clone https://github.com/ST10204902/ST10204902_PROG7312_POE.git
     ```
-2. Open the solution in Visual Studio:
+2. Open the solution in Visual Studio Code 2022:
     ```bash
     cd ST10204902_PROG7312_POE
     start ST10204902_PROG7312_POE.sln
