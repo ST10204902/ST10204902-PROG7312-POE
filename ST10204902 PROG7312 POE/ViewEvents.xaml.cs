@@ -55,7 +55,7 @@ namespace ST10204902_PROG7312_POE
 
             _eventRepository.EventAdded += OnEventAdded;
 
-            Task.Run(LoadEventsAsync);
+            Task.Run(ClearAll);
         }
 
         /// <summary>

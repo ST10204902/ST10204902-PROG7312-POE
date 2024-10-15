@@ -19,7 +19,16 @@ namespace ST10204902_PROG7312_POE.Components
     /// </summary>
     public partial class InputDialog : Window
     {
+        //--------------------------------------------------------------------------------
+        //Variables
         public string SelectedFileName { get; private set; }
+
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Parameterized constructor
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="fileNames"></param>
         public InputDialog(string title, string fileNames)
         {
             InitializeComponent();
@@ -27,6 +36,12 @@ namespace ST10204902_PROG7312_POE.Components
             FileNamesListBox.ItemsSource = fileNames.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
         }
 
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Selection changed event handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FileNamesListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (FileNamesListBox.SelectedItem != null)
@@ -34,7 +49,12 @@ namespace ST10204902_PROG7312_POE.Components
                 FileNameTextBox.Text = FileNamesListBox.SelectedItem.ToString();
             }
         }
-
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Ok button click event handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             SelectedFileName = FileNameTextBox.Text;
@@ -47,3 +67,4 @@ namespace ST10204902_PROG7312_POE.Components
         }
     }
 }
+//---------------------------------EOF-----------------------------------------------

@@ -183,9 +183,40 @@ namespace ST10204902_PROG7312_POE
         {
             if (FieldsAreEmpty())
             {
-                MessageBox.Show("Please fill in all fields before submitting.", "Incomplete Form", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("All fields must be filled out.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
+
+            if (!LocationSelected())
+            {
+                MessageBox.Show("Location must be selected.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            if (!DescriptionEntered())
+            {
+                MessageBox.Show("Description must be entered.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            if (!CategorySelected())
+            {
+                MessageBox.Show("Category must be selected.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            if (!DatePickedAndValid())
+            {
+                MessageBox.Show("A valid date must be picked.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
+            if (!MediaIsAttached())
+            {
+                MessageBox.Show("Media must be attached.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+
             return true;
         }
 
@@ -233,7 +264,7 @@ namespace ST10204902_PROG7312_POE
         /// <returns></returns>
         private bool CategorySelected()
         {
-            return cmbCategory.SelectedIndex != -1;
+            return cmbCategory.SelectedItem != null;
         }
 
         //---------------------------------------------------------------------------------------

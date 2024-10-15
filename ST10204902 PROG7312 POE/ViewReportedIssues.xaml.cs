@@ -18,6 +18,8 @@ namespace ST10204902_PROG7312_POE
     /// </summary>
     public partial class ViewReportedIssues : Window
     {
+        //--------------------------------------------------------------------------------
+        //Variables
         private readonly MainWindow _mainWindow;
         private readonly IIssueRepository _issueRepository;
 
@@ -25,6 +27,12 @@ namespace ST10204902_PROG7312_POE
         public ObservableCollection<Issue> LastMonthIssues { get; set; }
         public ObservableCollection<Issue> OlderIssues { get; set; }
 
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Parameterized constructor. Initializes the window with the main window and the issue repository.
+        /// </summary>
+        /// <param name="mainWindow"></param>
+        /// <param name="issueRepository"></param>
         public ViewReportedIssues(MainWindow mainWindow, IIssueRepository issueRepository)
         {
             InitializeComponent();
@@ -36,11 +44,19 @@ namespace ST10204902_PROG7312_POE
             LoadIssues();
         }
 
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Default constructor. Initializes the window.
+        /// </summary>
         public ViewReportedIssues()
         {
             InitializeComponent();
         }
 
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Load the issues from the issue repository and display them in the respective sections.
+        /// </summary>
         private void LoadIssues()
         {
             var issues = _issueRepository.GetAllIssues().ToList();
@@ -55,6 +71,13 @@ namespace ST10204902_PROG7312_POE
             AddIssueCardsOrMessage(OlderIssues, OlderIssuesControl, "No issues reported older than a month");
         }
 
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Add the issue cards to the items control or display a message if there are no issues.
+        /// </summary>
+        /// <param name="issues"></param>
+        /// <param name="itemsControl"></param>
+        /// <param name="message"></param>
         private void AddIssueCardsOrMessage(ObservableCollection<Issue> issues, ItemsControl itemsControl, string message)
         {
             itemsControl.Items.Clear();
@@ -82,7 +105,12 @@ namespace ST10204902_PROG7312_POE
             }
         }
 
-
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Window closing event handler. Opens the main window and closes this window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             //Open MainWindow and close this window
@@ -90,6 +118,12 @@ namespace ST10204902_PROG7312_POE
             _mainWindow.Activate();
         }
 
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// ScrollViewer PreviewMouseWheel event handler. Scrolls the outer scroll viewer when the inner scroll viewer is scrolled.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void InnerScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             ScrollViewer scrollViewer = sender as ScrollViewer;

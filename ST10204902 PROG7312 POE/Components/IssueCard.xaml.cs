@@ -21,11 +21,20 @@ namespace ST10204902_PROG7312_POE.Components
     /// </summary>
     public partial class IssueCard : UserControl
     {
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public IssueCard()
         {
             InitializeComponent();
         }
 
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Occurs when the issue card is clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnIssueCardClick(object sender, MouseButtonEventArgs e)
         {
             // Mark the event as handled
@@ -37,6 +46,11 @@ namespace ST10204902_PROG7312_POE.Components
             }
         }
 
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// View the details of the issue.
+        /// </summary>
+        /// <param name="issue"></param>
         private void ViewDetails(Issue issue)
         {
             if (issue.MediaAttachments == null || !issue.MediaAttachments.Any())
@@ -73,6 +87,12 @@ namespace ST10204902_PROG7312_POE.Components
             }
         }
 
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Prompt the user to select a file to open.
+        /// </summary>
+        /// <param name="fileNames"></param>
+        /// <returns></returns>
         private string PromptUserToSelectFile(string fileNames)
         {
             var inputDialog = new InputDialog("Select a file to open:", fileNames);
@@ -83,6 +103,11 @@ namespace ST10204902_PROG7312_POE.Components
             return null;
         }
 
+        //--------------------------------------------------------------------------------
+        /// <summary>
+        /// Try to open the file at the specified file path.
+        /// </summary>
+        /// <param name="filePath"></param>
         private static void OpenFile(string filePath)
         {
             try
@@ -96,3 +121,4 @@ namespace ST10204902_PROG7312_POE.Components
         }
     }
 }
+//----------------------------------EOF----------------------------------------------
