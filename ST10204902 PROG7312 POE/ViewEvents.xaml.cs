@@ -21,7 +21,7 @@ namespace ST10204902_PROG7312_POE
 
         private readonly MainWindow _mainWindow;
         private ObservableCollection<Event> _events;
-        private List<string> _searchTerms;
+        private Dictionary<string, int> _searchTerms;
         private HashSet<string> _eventKeys;
 
         public ObservableCollection<Event> Events
@@ -44,7 +44,7 @@ namespace ST10204902_PROG7312_POE
             InitializeComponent();
             _eventRepository = eventRepository;
             _mainWindow = mainWindow;
-            _searchTerms = new List<string>();
+            _searchTerms = new Dictionary<string, int>();
             _eventKeys = new HashSet<string>();
 
             Events = new ObservableCollection<Event>();
@@ -143,16 +143,23 @@ namespace ST10204902_PROG7312_POE
         {
             if (!string.IsNullOrEmpty(SearchTextBox.Text))
             {
-                var searchResults = _eventRepository.SearchEvents(SearchTextBox.Text).Result;
+                string searchTerm = SearchTextBox.Text;
+
+                // Update search term frequency
+                if (_searchTerms.ContainsKey(searchTerm))
+                {
+                    _searchTerms[searchTerm]++;
+                }
+                else
+                {
+                    _searchTerms[searchTerm] = 1;
+                }
+
+                var searchResults = _eventRepository.SearchEvents(searchTerm).Result;
                 if (searchResults != null && searchResults.Count > 0)
                 {
-                    // Add search term to list of search terms
-                    _searchTerms.Add(SearchTextBox.Text);
-
-                    // Add or update "Search Results" section without modifying the main Events list
                     UpdateSearchResultsExpander(searchResults);
 
-                    // Update "Recommended" section
                     UpdateRecommendedExpander();
                 }
                 else
@@ -162,7 +169,9 @@ namespace ST10204902_PROG7312_POE
                     await ClearAll();
                 }
             }
+        
         }
+
 
         /// <summary>
         /// Update the "Search Results" expander in the UI
@@ -281,8 +290,8 @@ namespace ST10204902_PROG7312_POE
             // Use a dictionary to keep track of accumulated event priority values
             var priorityDict = new Dictionary<Event, int>();
 
-            //Iterate over search terms and add event priorities
-            foreach (var searchTerm in _searchTerms)
+            // Iterate over search terms and add event priorities
+            foreach (var searchTerm in _searchTerms.Keys)
             {
                 var searchResults = _eventRepository.SearchEvents(searchTerm).Result;
 
@@ -290,34 +299,35 @@ namespace ST10204902_PROG7312_POE
                 {
                     int priority = CalculatePriority(searchTerm, ev);
 
-                    //If event already exists in the dictionary, increase its priority
+                    // Increase priority based on how often the search term has been used
+                    priority *= _searchTerms[searchTerm];
+
+                    // If event already exists in the dictionary, increase its priority
                     if (priorityDict.ContainsKey(ev))
                     {
                         priorityDict[ev] += priority;
                     }
                     else
                     {
-                        //If it doesn't exist, add event with priority value
+                        // If it doesn't exist, add event with priority value
                         priorityDict[ev] = priority;
                     }
                 }
             }
 
-            //Get top 5 recommended events based on priority
+            // Get top 5 recommended events based on priority
             var recommendedEvents = priorityDict
-                .OrderBy(kvp => kvp.Value)
+                .OrderByDescending(kvp => kvp.Value)
                 .Take(5)
                 .Select(kvp => kvp.Key)
                 .ToList();
 
-            //Update content of recommended expander in UI
+            // Update content of recommended expander in UI
             Application.Current.Dispatcher.Invoke(() =>
             {
                 RecommendedItemsControl.ItemsSource = recommendedEvents;
-
                 RecommendedExpander.IsExpanded = true;
-            }
-            );
+            });
         }
 
         //----------------------------------------------------------------
@@ -346,8 +356,6 @@ namespace ST10204902_PROG7312_POE
             {
                 priority += 3;
             }
-
-            Console.WriteLine("Priority: " + priority + " " + ev.ToString());
 
             return priority;
         }
@@ -395,6 +403,12 @@ namespace ST10204902_PROG7312_POE
             await LoadEventsAsync();
         }
 
+        //---------------------------------------------------------------------
+        /// <summary>
+        /// Reset button event handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void ResetButton_Click(object sender, RoutedEventArgs e)
         {
             var result = MessageBox.Show(
