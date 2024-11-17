@@ -225,9 +225,6 @@
     <Resource Include="AppImages\ReportIssueIcon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="TODO.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\EventScraper\EventScraper.csproj">
       <Project>{ac414b31-a648-416a-8727-775f3008b8db}</Project>
       <Name>EventScraper</Name>
