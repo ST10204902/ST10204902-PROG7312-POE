@@ -7,7 +7,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
     xmlns:ui="http://schemas.modernwpf.com/2019"
-    xmlns:wv="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
     Title="Municipal Services"
     Width="350"
     Height="400"
@@ -104,15 +103,15 @@
             Content="Local Events"
             ToolTip="See Local Events and Announcements in Cape Town" />
 
-        <!--  Service Request Status Button (disabled)  -->
+        <!--  Service Request Status Button  -->
         <Button
             Name="btnServiceStatus"
             Grid.Row="5"
             Margin="16,8,16,8"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            Content="Service Request Status"
-            IsEnabled="False"
+            Content="Service Status"
+            Click="btnServiceStatus_Click"
             ToolTip="This feature is coming soon."
             ToolTipService.ShowOnDisabled="True" />
 

@@ -1,0 +1,156 @@
+﻿<Window
+    x:Class="ST10204902_PROG7312_POE.ServiceRequestDetailsWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ST10204902_PROG7312_POE"
+    xmlns:conv="clr-namespace:ST10204902_PROG7312_POE.Converters"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    Title="Service Request Details"
+    Width="900"
+    Height="700"
+    ui:WindowHelper.UseModernWindowStyle="True"
+    WindowStartupLocation="CenterScreen">
+    
+    <Window.Resources>
+        <conv:PriorityToStringConverter x:Key="PriorityToStringConverter"/>
+        <Style x:Key="HeaderTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,10,0,5"/>
+        </Style>
+        <Style x:Key="ContentTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="10,0,0,10"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+    </Window.Resources>
+
+    <ScrollViewer>
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Basic Information -->
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="{Binding Description}" 
+                         FontSize="24" 
+                         FontWeight="Bold" 
+                         Margin="0,0,0,20"/>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Left Column -->
+                    <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                        <TextBlock Text="Request ID" Style="{StaticResource HeaderTextBlockStyle}"/>
+                        <TextBlock Text="{Binding Id}" Style="{StaticResource ContentTextBlockStyle}"/>
+
+                        <TextBlock Text="Status" Style="{StaticResource HeaderTextBlockStyle}"/>
+                        <TextBlock Text="{Binding Status}" Style="{StaticResource ContentTextBlockStyle}"/>
+
+                        <TextBlock Text="Priority" Style="{StaticResource HeaderTextBlockStyle}"/>
+                        <TextBlock Text="{Binding Priority, Converter={StaticResource PriorityToStringConverter}}" 
+                                 Style="{StaticResource ContentTextBlockStyle}"/>
+
+                        <TextBlock Text="Category" Style="{StaticResource HeaderTextBlockStyle}"/>
+                        <TextBlock Text="{Binding Category}" Style="{StaticResource ContentTextBlockStyle}"/>
+
+                        <TextBlock Text="Location" Style="{StaticResource HeaderTextBlockStyle}"/>
+                        <TextBlock Text="{Binding Location}" Style="{StaticResource ContentTextBlockStyle}"/>
+                    </StackPanel>
+
+                    <!-- Right Column -->
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Requester Information" Style="{StaticResource HeaderTextBlockStyle}"/>
+                        <TextBlock Style="{StaticResource ContentTextBlockStyle}">
+                            <Run Text="{Binding RequesterName}"/>
+                            <LineBreak/>
+                            <Run Text="{Binding ContactInfo}"/>
+                        </TextBlock>
+
+                        <TextBlock Text="Assigned To" Style="{StaticResource HeaderTextBlockStyle}"/>
+                        <TextBlock Text="{Binding AssignedTo}" Style="{StaticResource ContentTextBlockStyle}"/>
+
+                        <TextBlock Text="Dates" Style="{StaticResource HeaderTextBlockStyle}"/>
+                        <TextBlock Style="{StaticResource ContentTextBlockStyle}">
+                            <Run Text="Submitted: "/>
+                            <Run Text="{Binding DateSubmitted, StringFormat=d}"/>
+                            <LineBreak/>
+                            <Run Text="Resolved: "/>
+                            <Run Text="{Binding DateResolved, StringFormat=d}"/>
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Status History -->
+                <TextBlock Text="Status History" Style="{StaticResource HeaderTextBlockStyle}"/>
+                <ListView x:Name="StatusHistoryList" 
+                         MaxHeight="150" 
+                         Margin="10,0,0,20"
+                         BorderThickness="1">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Item1, StringFormat=\{0:g\}}" 
+                                         Margin="0,0,10,0"/>
+                                <TextBlock Text="{Binding Item2}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <!-- Resolution Comment -->
+                <TextBlock Text="Resolution Comment" Style="{StaticResource HeaderTextBlockStyle}"/>
+                <TextBlock Text="{Binding ResolutionComment}" 
+                         Style="{StaticResource ContentTextBlockStyle}"/>
+
+                <!-- Dependencies Section -->
+                <TextBlock Text="Dependencies" Style="{StaticResource HeaderTextBlockStyle}"/>
+                <ComboBox x:Name="TraversalTypeComboBox"
+                         Margin="10,5"
+                         SelectionChanged="TraversalTypeComboBox_SelectionChanged">
+                    <ComboBoxItem Content="Depth-First Search" IsSelected="True"/>
+                    <ComboBoxItem Content="Breadth-First Search"/>
+                </ComboBox>
+                <ListBox x:Name="AssociatedRequestsListBox"
+                        Height="150"
+                        Margin="10,0,0,20">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Description}" 
+                                          TextWrapping="Wrap"
+                                          MaxWidth="400"/>
+                                <TextBlock Text=" (ID: " Margin="5,0,0,0"/>
+                                <TextBlock Text="{Binding Id}"/>
+                                <TextBlock Text=")"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- Attachments -->
+                <TextBlock Text="Attachments" Style="{StaticResource HeaderTextBlockStyle}"/>
+                <ListBox x:Name="AttachmentsList"
+                        MaxHeight="150"
+                        Margin="10,0,0,20">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding FileName}" Margin="0,0,10,0"/>
+                                <Button Content="Open" 
+                                        Click="OpenAttachment_Click"
+                                        Margin="5,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Window>

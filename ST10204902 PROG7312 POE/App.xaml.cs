@@ -24,14 +24,21 @@ namespace ST10204902_PROG7312_POE
         /// <param name="e"></param>
         protected override void OnStartup(StartupEventArgs e)
         {
-            var serviceCollection = new ServiceCollection();
-            ConfigureServices(serviceCollection);
-            ServiceProvider = serviceCollection.BuildServiceProvider();
+            try
+            {
+                var serviceCollection = new ServiceCollection();
+                ConfigureServices(serviceCollection);
+                ServiceProvider = serviceCollection.BuildServiceProvider();
 
-            CheckEventCSV(ServiceProvider);
+                CheckEventCSV(ServiceProvider);
 
-            var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
-            mainWindow.Show();
+                var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
+                mainWindow.Show();
+            } catch (Exception ex)
+            {
+                MessageBox.Show($"Exception during startup: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
+            }
         }
 
         //----------------------------------------------------------------
@@ -45,6 +52,7 @@ namespace ST10204902_PROG7312_POE
             services.AddSingleton<IIssueRepository, IssueRepository>();
             services.AddSingleton<MainWindow>();
             services.AddSingleton<ReportIssues>();
+            services.AddTransient<ViewEvents>();
 
             // Use the EventService in EventRepository and EventSearcher
             services.AddSingleton<IEventRepository, EventRepository>();

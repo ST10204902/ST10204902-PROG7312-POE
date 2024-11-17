@@ -1,0 +1,405 @@
+﻿<Window
+    x:Class="ST10204902_PROG7312_POE.ServiceRequestWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:components="clr-namespace:ST10204902_PROG7312_POE.Components"
+    xmlns:conv="clr-namespace:ST10204902_PROG7312_POE.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ST10204902_PROG7312_POE"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    Title="Service Requests"
+    MinWidth="1200"
+    MinHeight="600"
+    ui:WindowHelper.UseModernWindowStyle="True"
+    Closing="Window_Closing"
+    mc:Ignorable="d">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <conv:PriorityToStringConverter x:Key="PriorityToStringConverter" />
+
+        <Style
+            x:Key="FormTextBoxStyle"
+            BasedOn="{StaticResource {x:Type TextBox}}"
+            TargetType="TextBox">
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="MaxWidth" Value="380" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="AcceptsReturn" Value="True" />
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+        </Style>
+
+        <Style
+            x:Key="FormSingleLineTextBoxStyle"
+            BasedOn="{StaticResource {x:Type TextBox}}"
+            TargetType="TextBox">
+            <Setter Property="TextWrapping" Value="NoWrap" />
+            <Setter Property="MaxWidth" Value="380" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="AcceptsReturn" Value="False" />
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition x:Name="FormColumn" Width="400" />
+        </Grid.ColumnDefinitions>
+
+        <!--  Banner  -->
+        <Grid Grid.Row="0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Image
+                Grid.Column="0"
+                Width="50"
+                Height="50"
+                Margin="10,10,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Source="AppImages/CoCTLogoCropped.png"
+                Stretch="Uniform" />
+            <TextBlock
+                Grid.Column="1"
+                Margin="10,15,0,0"
+                FontSize="24"
+                FontWeight="Bold"
+                Text="Service Requests" />
+        </Grid>
+
+        <!--  High Priority Section  -->
+        <Border
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="10,5,10,10"
+            BorderBrush="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+            BorderThickness="1"
+            CornerRadius="4">
+            <StackPanel Margin="10">
+                <TextBlock
+                    Margin="0,0,0,10"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Text="High Priority Requests" />
+                <ListView x:Name="HighPriorityListView" MaxHeight="150">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    FontWeight="Bold"
+                                    Foreground="Red"
+                                    Text="{Binding Description}" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Margin="10,0,10,0"
+                                    Text="{Binding Status}" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Margin="0,0,0,0"
+                                    Text="{Binding Priority, Converter={StaticResource PriorityToStringConverter}}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+            </StackPanel>
+        </Border>
+
+        <!--  Add New Request Button and Refresh High Priority Button  -->
+        <Grid
+            Grid.Row="2"
+            Grid.Column="0"
+            Margin="10,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <!--  Left buttons  -->
+                <ColumnDefinition Width="*" />
+                <!--  Spacer  -->
+                <ColumnDefinition Width="Auto" />
+                <!--  Search section  -->
+            </Grid.ColumnDefinitions>
+
+            <!--  Left buttons  -->
+            <StackPanel
+                Grid.Column="0"
+                HorizontalAlignment="Left"
+                Orientation="Horizontal">
+                <Button
+                    Width="150"
+                    Height="35"
+                    Margin="0,0,10,0"
+                    Click="AddNewRequestButton_Click"
+                    Content="Add New Request" />
+                <Button
+                    Width="150"
+                    Height="35"
+                    Click="RefreshHighPriority_Click"
+                    Content="Refresh High Priority" />
+                <Button
+                    x:Name="PopulateDataButton"
+                    Margin="10,5"
+                    Click="PopulateDataButton_Click"
+                    Content="Populate Sample Data" />
+            </StackPanel>
+
+            <!--  Search section  -->
+            <StackPanel
+                Grid.Column="2"
+                HorizontalAlignment="Right"
+                Orientation="Horizontal">
+                <ComboBox
+                    x:Name="SearchByComboBox"
+                    Width="120"
+                    MinWidth="80"
+                    Margin="0,0,5,0">
+                    <ComboBoxItem Content="Description" />
+                    <ComboBoxItem Content="Location" />
+                    <ComboBoxItem Content="Requester" />
+                    <ComboBoxItem Content="Category" />
+                    <ComboBoxItem Content="Status" />
+                </ComboBox>
+                <TextBox
+                    x:Name="SearchTextBox"
+                    Width="180"
+                    MinWidth="120"
+                    Margin="0,0,5,0"
+                    ui:ControlHelper.PlaceholderText="Search service requests..."
+                    KeyUp="SearchTextBox_KeyUp" />
+                <Button
+                    MinWidth="60"
+                    Click="SearchButton_Click"
+                    Content="Search" />
+                <!--  Added MinWidth  -->
+            </StackPanel>
+        </Grid>
+
+        <!--  List of Service Requests  -->
+        <ScrollViewer
+            Grid.Row="3"
+            Grid.Column="0"
+            Margin="10"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto">
+            <ItemsControl Name="ServiceRequestsControl">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel ItemHeight="300" ItemWidth="250" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!--  Service Request Form Panel  -->
+        <ScrollViewer
+            Grid.Row="1"
+            Grid.RowSpan="3"
+            Grid.Column="1"
+            Margin="10"
+            Visibility="{Binding IsFormVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <!--  Form Title  -->
+                    <RowDefinition Height="Auto" />
+                    <!--  Requester Name  -->
+                    <RowDefinition Height="Auto" />
+                    <!--  Contact Info  -->
+                    <RowDefinition Height="Auto" />
+                    <!--  Location  -->
+                    <RowDefinition Height="Auto" />
+                    <!--  Description  -->
+                    <RowDefinition Height="Auto" />
+                    <!--  Category  -->
+                    <RowDefinition Height="Auto" />
+                    <!--  Priority  -->
+                    <RowDefinition Height="Auto" />
+                    <!--  Assigned To (Edit Mode)  -->
+                    <RowDefinition Height="Auto" />
+                    <!--  Date Resolved (Edit Mode)  -->
+                    <RowDefinition Height="Auto" />
+                    <!--  Resolution Comment (Edit Mode)  -->
+                    <RowDefinition Height="Auto" />
+                    <!--  Dependencies  -->
+                    <RowDefinition Height="Auto" />
+                    <!--  Attachments  -->
+                    <RowDefinition Height="Auto" />
+                    <!--  Form Buttons  -->
+                </Grid.RowDefinitions>
+
+                <!--  Form Title  -->
+                <TextBlock
+                    Grid.Row="0"
+                    Margin="0,0,0,10"
+                    FontSize="18"
+                    FontWeight="Bold"
+                    Text="{Binding FormTitle}" />
+
+                <!--  Requester Name  -->
+                <TextBox
+                    Name="RequesterNameTextBox"
+                    Grid.Row="1"
+                    Margin="0,0,0,10"
+                    HorizontalAlignment="Stretch"
+                    ui:ControlHelper.PlaceholderText="Requester Name"
+                    Style="{StaticResource FormSingleLineTextBoxStyle}"
+                    TextWrapping="NoWrap" />
+
+                <!--  Contact Information  -->
+                <TextBox
+                    Name="ContactInfoTextBox"
+                    Grid.Row="2"
+                    Margin="0,0,0,10"
+                    HorizontalAlignment="Stretch"
+                    ui:ControlHelper.PlaceholderText="Contact Information"
+                    Style="{StaticResource FormSingleLineTextBoxStyle}"
+                    TextWrapping="NoWrap" />
+
+                <!--  Location  -->
+                <TextBox
+                    Name="LocationTextBox"
+                    Grid.Row="3"
+                    Margin="0,0,0,10"
+                    HorizontalAlignment="Stretch"
+                    ui:ControlHelper.PlaceholderText="Location"
+                    Style="{StaticResource FormSingleLineTextBoxStyle}"
+                    TextWrapping="NoWrap" />
+
+                <!--  Description  -->
+                <TextBox
+                    Name="DescriptionTextBox"
+                    Grid.Row="4"
+                    Height="100"
+                    Margin="0,0,0,10"
+                    HorizontalAlignment="Stretch"
+                    ui:ControlHelper.PlaceholderText="Description"
+                    Style="{StaticResource FormTextBoxStyle}"
+                    VerticalScrollBarVisibility="Auto" />
+
+                <!--  Category ComboBox  -->
+                <ComboBox
+                    Name="CategoryComboBox"
+                    Grid.Row="5"
+                    Margin="0,0,0,10"
+                    HorizontalAlignment="Stretch"
+                    ui:ControlHelper.PlaceholderText="Category">
+                    <ComboBoxItem Content="Water &amp; Sanitation" />
+                    <ComboBoxItem Content="Roads &amp; Transport" />
+                    <ComboBoxItem Content="Electricity" />
+                    <ComboBoxItem Content="Waste Management" />
+                    <ComboBoxItem Content="Parks &amp; Recreation" />
+                    <ComboBoxItem Content="Building &amp; Planning" />
+                    <ComboBoxItem Content="Traffic Services" />
+                    <ComboBoxItem Content="Public Safety" />
+                    <ComboBoxItem Content="Community Services" />
+                </ComboBox>
+
+                <!--  Priority ComboBox  -->
+                <ComboBox
+                    Name="PriorityComboBox"
+                    Grid.Row="6"
+                    Margin="0,0,0,10"
+                    HorizontalAlignment="Stretch"
+                    ui:ControlHelper.PlaceholderText="Priority">
+                    <ComboBoxItem Content="High" />
+                    <ComboBoxItem Content="Medium" />
+                    <ComboBoxItem Content="Low" />
+                </ComboBox>
+
+                <!--  Assigned To  -->
+                <TextBox
+                    Name="AssignedToTextBox"
+                    Grid.Row="7"
+                    Margin="0,0,0,10"
+                    HorizontalAlignment="Stretch"
+                    ui:ControlHelper.PlaceholderText="Assigned To"
+                    Style="{StaticResource FormSingleLineTextBoxStyle}"
+                    TextWrapping="NoWrap"
+                    Visibility="{Binding IsEditMode, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                <!--  Date Resolved  -->
+                <DatePicker
+                    Name="DateResolvedPicker"
+                    Grid.Row="8"
+                    Margin="0,0,0,10"
+                    HorizontalAlignment="Stretch"
+                    ui:ControlHelper.PlaceholderText="Date Resolved"
+                    Visibility="{Binding IsEditMode, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                <!--  Resolution Comment  -->
+                <TextBox
+                    Name="ResolutionCommentTextBox"
+                    Grid.Row="9"
+                    Height="100"
+                    Margin="0,0,0,10"
+                    HorizontalAlignment="Stretch"
+                    ui:ControlHelper.PlaceholderText="Resolution Comment"
+                    Style="{StaticResource FormTextBoxStyle}"
+                    Visibility="{Binding IsEditMode, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                <!--  Manage Dependencies Button  -->
+                <Button
+                    Name="ManageDependenciesButton"
+                    Grid.Row="10"
+                    Margin="0,0,0,10"
+                    HorizontalAlignment="Stretch"
+                    Click="ManageDependenciesButton_Click"
+                    Content="Manage Dependencies" />
+
+                <!--  Attachments Section  -->
+                <StackPanel Grid.Row="11" Margin="0,0,0,10">
+                    <Button
+                        Name="AttachMediaButton"
+                        Height="35"
+                        Margin="0,0,0,10"
+                        HorizontalAlignment="Stretch"
+                        Click="AttachMediaButton_Click"
+                        Content="Attach Media Files" />
+                    <ListBox
+                        Name="AttachmentsListBox"
+                        MaxHeight="100"
+                        DisplayMemberPath="FileName">
+                        <ListBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Click="OpenAttachment_Click" Header="Open File" />
+                                <MenuItem Click="RemoveAttachment_Click" Header="Remove" />
+                            </ContextMenu>
+                        </ListBox.ContextMenu>
+                    </ListBox>
+                </StackPanel>
+
+                <!--  Form Buttons  -->
+                <StackPanel
+                    Grid.Row="12"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal">
+                    <Button
+                        Width="80"
+                        Margin="0,10,10,0"
+                        HorizontalAlignment="Stretch"
+                        Click="SaveChangesButton_Click"
+                        Content="Save" />
+                    <Button
+                        Width="80"
+                        Margin="0,10,0,0"
+                        HorizontalAlignment="Stretch"
+                        Click="CancelButton_Click"
+                        Content="Cancel" />
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Window>

@@ -8,6 +8,7 @@ using System.Windows.Controls;
 
 namespace ST10204902_PROG7312_POE
 {
+    //------------------------------------------------------------------
     public class NotEmptyValidation : ValidationRule
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
@@ -21,6 +22,7 @@ namespace ST10204902_PROG7312_POE
         }
     }
 
+    //------------------------------------------------------------------
     public class CategoryValidationRule : ValidationRule
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
@@ -33,3 +35,4 @@ namespace ST10204902_PROG7312_POE
         }
     }
 }
+// ------------------------------EOF------------------------------------

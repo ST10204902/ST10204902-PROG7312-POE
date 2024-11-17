@@ -13,7 +13,7 @@
                 <ui:XamlControlsResources />
             </ResourceDictionary.MergedDictionaries>
             <converters:MediaAttachmentConverter x:Key="MediaAttachmentConverter" />
-            <converters:UrlToImageConverter x:Key="URLToMediaConverter"/>
+            <converters:UrlToImageConverter x:Key="URLToMediaConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

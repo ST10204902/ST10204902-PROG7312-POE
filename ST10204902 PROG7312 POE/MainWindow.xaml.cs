@@ -21,6 +21,7 @@ namespace ST10204902_PROG7312_POE
         private readonly IIssueRepository _issueRepository;
         private readonly IServiceProvider _serviceProvider;
         private readonly IEventRepository _eventRepository;
+        
         private bool _isExitConfirmed = false;
 
         //---------------------------------------------------------
@@ -172,10 +173,33 @@ namespace ST10204902_PROG7312_POE
         /// <param name="e"></param>
         private async void btnLocalEvents_Click(object sender, RoutedEventArgs e)
         {
-            ViewEvents viewEvents = new ViewEvents(_eventRepository,  this);
-            await viewEvents.LoadEventsAsync();
-            viewEvents.Show();
-            this.Hide();
+            try
+            {
+                var viewEventsWindow = _serviceProvider.GetRequiredService<ViewEvents>();
+                await viewEventsWindow.LoadEventsAsync();
+                viewEventsWindow.Show();
+                this.Hide();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                MessageBox.Show($"Exception in btnLocalEvents_Click: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void btnServiceStatus_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ServiceRequestWindow srw = new ServiceRequestWindow(this);
+                srw.Show();
+                this.Hide();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                MessageBox.Show($"Exception in btnServiceStatus_Click: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

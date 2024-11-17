@@ -10,8 +10,20 @@ using Patagames.Pdf;
 
 namespace ST10204902_PROG7312_POE.Converters
 {
+    //------------------------------------------------------------------
+    /// <summary>
+    /// Converts a media attachment to a UI element.
+    /// </summary>
     public class MediaAttachmentConverter : IValueConverter
     {
+        //------------------------------------------------------------------
+        /// <summary>
+        /// Converts a media attachment to a UI element.
+        /// </summary>
+        /// <param name="value">The media attachment to convert.</param>
+        /// <param name="targetType">The target type.</param>
+        /// <param name="parameter">The parameter.</param>
+        /// <param name="culture">The culture.</param>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is MediaAttachment mediaAttachment)
@@ -35,11 +47,25 @@ namespace ST10204902_PROG7312_POE.Converters
             return null;
         }
 
+        //------------------------------------------------------------------
+        /// <summary>
+        /// Converts back a UI element to a media attachment.
+        /// </summary>
+        /// <param name="value">The UI element to convert.</param>
+        /// <param name="targetType">The target type.</param>
+        /// <param name="parameter">The parameter.</param>
+        /// <param name="culture">The culture.</param>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
 
+        //------------------------------------------------------------------
+        /// <summary>
+        /// Creates an image control for image file previews.
+        /// </summary>
+        /// <param name="fileData">The byte array representing the file data.</param>
+        /// <returns>An image control for image file previews.</returns>
         private Image CreateImageControl(byte[] fileData)
         {
             using (var stream = new MemoryStream(fileData))
@@ -59,6 +85,12 @@ namespace ST10204902_PROG7312_POE.Converters
             }
         }
 
+        //------------------------------------------------------------------
+        /// <summary>
+        /// Creates an image control for PDF file previews.
+        /// </summary>
+        /// <param name="fileData">The byte array representing the file data.</param>
+        /// <returns>An image control for PDF file previews.</returns>
         private Image CreatePdfPreviewImage(byte[] fileData)
         {
             using (var stream = new MemoryStream(fileData))
@@ -98,7 +130,12 @@ namespace ST10204902_PROG7312_POE.Converters
                 }
             }
         }
-
+        //------------------------------------------------------------------
+        /// <summary>
+        /// Creates a text block for text file previews.
+        /// </summary>
+        /// <param name="fileData">The byte array representing the file data.</param>
+        /// <returns>A text block for text file previews.</returns> 
         private TextBlock CreateTextPreview(byte[] fileData)
         {
             string text = System.Text.Encoding.UTF8.GetString(fileData);
@@ -111,6 +148,11 @@ namespace ST10204902_PROG7312_POE.Converters
             };
         }
 
+        //------------------------------------------------------------------
+        /// <summary>
+        /// Creates a text block for unsupported file types.
+        /// </summary>
+        /// <returns>A text block for unsupported file types.</returns>
         private TextBlock CreateUnsupportedFileTypeTextBlock()
         {
             return new TextBlock
@@ -124,3 +166,4 @@ namespace ST10204902_PROG7312_POE.Converters
         }
     }
 }
+// ------------------------------EOF------------------------------------

@@ -1,0 +1,77 @@
+﻿<UserControl
+    x:Class="ST10204902_PROG7312_POE.Components.ServiceRequestCard"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converter="clr-namespace:ST10204902_PROG7312_POE.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    MinWidth="150"
+    MinHeight="150"
+    MaxWidth="250"
+    MaxHeight="300">
+
+    <UserControl.Resources>
+        <converter:PriorityToStringConverter x:Key="PriorityToStringConverter" />
+        <Style TargetType="Border">
+            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="5" />
+            <EventSetter Event="MouseLeftButtonUp" Handler="OnServiceRequestCardClick" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="LightGray" />
+                    <Setter Property="BorderBrush" Value="DarkGray" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Border Margin="5" Padding="10">
+        <StackPanel>
+            <!-- Title / Request Description -->
+            <TextBlock
+                Margin="0,10,0,0"
+                FontWeight="Bold"
+                FontSize="16"
+                Text="{Binding Description, FallbackValue='Service Request Description'}"
+                TextWrapping="Wrap" />
+
+            <!-- Priority -->
+            <TextBlock
+                Margin="0,5,0,0"
+                Text="Priority:"
+                FontWeight="Bold" />
+            <TextBlock
+                Margin="0,2,0,0"
+                Text="{Binding Priority, Converter={StaticResource PriorityToStringConverter}}"
+                TextWrapping="Wrap" />
+
+            <!-- Status -->
+            <TextBlock
+                Margin="0,5,0,0"
+                Text="Status:"
+                FontWeight="Bold" />
+            <TextBlock
+                Margin="0,2,0,0"
+                Text="{Binding Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                TextWrapping="Wrap" />
+
+            <!-- Location -->
+            <TextBlock
+                Margin="0,5,0,0"
+                Text="Location:"
+                FontWeight="Bold" />
+            <TextBlock
+                Margin="0,2,0,0"
+                Text="{Binding Location, FallbackValue='Unknown'}"
+                TextWrapping="Wrap" />
+
+            <!-- More Details and Edit Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                <Button Content="More..." Width="80" Margin="5" Click="MoreDetailsButton_Click" />
+                <Button Content="Edit" Width="60" Margin="5" Click="EditButton_Click" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>
