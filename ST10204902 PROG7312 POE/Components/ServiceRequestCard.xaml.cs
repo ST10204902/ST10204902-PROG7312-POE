@@ -86,8 +86,10 @@ namespace ST10204902_PROG7312_POE.Components
         /// </summary>
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
-            var selectedRequest = (ServiceRequest)DataContext;
-            _parentWindow.ShowEditPanel(selectedRequest);
+            if(_parentWindow != null){
+                var selectedRequest = (ServiceRequest)DataContext;
+                _parentWindow.ShowEditPanel(selectedRequest);
+            }
         }
 
     }

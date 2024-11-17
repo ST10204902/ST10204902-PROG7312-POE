@@ -420,10 +420,10 @@ namespace ST10204902_PROG7312_POE
 
         //------------------------------------------------------------------
         /// <summary>
-        /// Analyzes the impact of completing a service request.
+        /// Analyses the impact of completing a service request.
         /// </summary>
-        /// <param name="request">The service request to analyze.</param>
-        private void AnalyzeRequestImpact(ServiceRequest request)
+        /// <param name="request">The service request to analyse.</param>
+        public void AnalyseRequestImpact(ServiceRequest request)
         {
             // Use BFS to find all immediately affected requests
             var immediateImpact = _serviceRequestGraph.BreadthFirstSearch(request).Skip(1).Take(1);
@@ -468,7 +468,9 @@ namespace ST10204902_PROG7312_POE
         private List<ServiceRequest> GetHighPriorityRequests(int count)
         {
             var allRequests = _priorityQueue.GetTopN(count);
-            return allRequests.Where(r => r.Priority == 1).ToList();
+            return allRequests
+                .Where(r => r.Priority == 1 && r.Status == "Pending")
+                .ToList();
         }
 
         //------------------------------------------------------------------
@@ -558,89 +560,136 @@ namespace ST10204902_PROG7312_POE
             {
                 if (!IsEditMode)
                 {
-                    // Store the current dependencies before creating new request
-                    var currentDependencies = _currentRequest?.Dependencies ?? new List<ServiceRequest>();
-
-                    _currentRequest = new ServiceRequest
-                    {
-                        Id = GenerateNewId(),
-                        Status = "Pending",
-                        DateSubmitted = DateTime.Now,
-                        StatusHistory = new List<Tuple<DateTime, string>>(),
-                        Attachments = new List<MediaAttachment>(),
-                        Dependencies = currentDependencies
-                    };
-                    _serviceRequestGraph.AddServiceRequest(_currentRequest);
-
-                    // Re-add the dependencies to the graph
-                    foreach (var dependency in currentDependencies)
-                    {
-                        _serviceRequestGraph.AddDependency(_currentRequest, dependency);
-                    }
+                    CreateNewRequest();
                 }
 
-                // Update request properties
-                _currentRequest.RequesterName = RequesterNameTextBox.Text;
-                _currentRequest.ContactInfo = ContactInfoTextBox.Text;
-                _currentRequest.Location = LocationTextBox.Text;
-                _currentRequest.Description = DescriptionTextBox.Text;
-                _currentRequest.Category = (CategoryComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
-                _currentRequest.AssignedTo = AssignedToTextBox.Text;
-                _currentRequest.DateResolved = DateResolvedPicker.SelectedDate;
-                _currentRequest.ResolutionComment = ResolutionCommentTextBox.Text;
-                _currentRequest.DateSubmitted = DateTime.Now;
-
-                // Update status if resolved date is set
-                if (DateResolvedPicker.SelectedDate.HasValue && !string.IsNullOrEmpty(ResolutionCommentTextBox.Text))
-                {
-                    string newStatus = "Resolved";
-                    if (_currentRequest.Status != newStatus)
-                    {
-                        _currentRequest.StatusHistory.Add(new Tuple<DateTime, string>(DateTime.Now, newStatus));
-                        _currentRequest.Status = newStatus;
-                    }
-                }
-
-                // Get the new priority value
-                int newPriority = 3; // Default to Low
-                if (PriorityComboBox.SelectedItem is ComboBoxItem selectedPriority)
-                {
-                    newPriority = GetPriorityValue(selectedPriority.Content.ToString());
-                }
-
-                if (IsEditMode)
-                {
-                    // Update priority using the new method
-                    _priorityQueue.UpdatePriority(_currentRequest, newPriority);
-                }
-                else
-                {
-                    _currentRequest.Priority = newPriority;
-                    _priorityQueue.Enqueue(_currentRequest);
-                    _serviceRequestBST.Insert(_currentRequest);
-
-                    // Create and add new card
-                    var card = new ServiceRequestCard(this, _serviceRequestGraph)
-                    {
-                        DataContext = _currentRequest
-                    };
-
-                    var items = (ServiceRequestsControl.ItemsSource as List<ServiceRequestCard>) ?? new List<ServiceRequestCard>();
-                    items.Add(card);
-                    ServiceRequestsControl.ItemsSource = null;
-                    ServiceRequestsControl.ItemsSource = items;
-                }
-
-                // Update UI
-                UpdateHighPriorityList();
-                ClearFormFields();
-                IsFormVisible = false;
-                DataContext = this;
+                UpdateRequestProperties();
+                HandleRequestStatus();
+                UpdateRequestPriority();
+                UpdateUIElements();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error saving changes: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        //------------------------------------------------------------------
+        /// <summary>
+        /// Creates a new request.
+        /// </summary>
+        private void CreateNewRequest()
+        {
+            // Store the current dependencies before creating new request
+            var currentDependencies = _currentRequest?.Dependencies ?? new List<ServiceRequest>();
+
+            _currentRequest = new ServiceRequest
+            {
+                Id = GenerateNewId(),
+                Status = "Pending",
+                DateSubmitted = DateTime.Now,
+                StatusHistory = new List<Tuple<DateTime, string>>(),
+                Attachments = new List<MediaAttachment>(),
+                Dependencies = new List<ServiceRequest>()
+            };
+            _serviceRequestGraph.AddServiceRequest(_currentRequest);
+
+            // Re-add the dependencies to the graph
+            foreach (var dependency in currentDependencies)
+            {
+                _serviceRequestGraph.AddDependency(_currentRequest, dependency);
+            }
+        }
+
+        //------------------------------------------------------------------
+        /// <summary>
+        /// Updates the request properties.
+        /// </summary>
+        private void UpdateRequestProperties()
+        {
+            _currentRequest.RequesterName = RequesterNameTextBox.Text;
+            _currentRequest.ContactInfo = ContactInfoTextBox.Text;
+            _currentRequest.Location = LocationTextBox.Text;
+            _currentRequest.Description = DescriptionTextBox.Text;
+            _currentRequest.Category = (CategoryComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
+            _currentRequest.AssignedTo = AssignedToTextBox.Text;
+            _currentRequest.DateResolved = DateResolvedPicker.SelectedDate;
+            _currentRequest.ResolutionComment = ResolutionCommentTextBox.Text;
+            _currentRequest.DateSubmitted = DateTime.Now;
+
+            // Single impact analysis call after properties are updated
+            AnalyseRequestImpact(_currentRequest);
+        }
+
+        //------------------------------------------------------------------
+        /// <summary>
+        /// Handles the request status.
+        /// </summary>
+        private void HandleRequestStatus()
+        {
+            if (DateResolvedPicker.SelectedDate.HasValue && !string.IsNullOrEmpty(ResolutionCommentTextBox.Text))
+            {
+                string newStatus = "Resolved";
+                if (_currentRequest.Status != newStatus)
+                {
+                    _currentRequest.StatusHistory.Add(new Tuple<DateTime, string>(DateTime.Now, newStatus));
+                    _currentRequest.Status = newStatus;
+                }
+            }
+        }
+
+        //------------------------------------------------------------------
+        /// <summary>
+        /// Updates the request priority.
+        /// </summary>
+        private void UpdateRequestPriority()
+        {
+            int newPriority = 3; // Default to Low
+            if (PriorityComboBox.SelectedItem is ComboBoxItem selectedPriority)
+            {
+                newPriority = GetPriorityValue(selectedPriority.Content.ToString());
+            }
+
+            if (IsEditMode)
+            {
+                _priorityQueue.UpdatePriority(_currentRequest, newPriority);
+            }
+            else
+            {
+                _currentRequest.Priority = newPriority;
+                _priorityQueue.Enqueue(_currentRequest);
+                _serviceRequestBST.Insert(_currentRequest);
+                AddNewRequestCard();
+            }
+        }
+
+        //------------------------------------------------------------------
+        /// <summary>
+        /// Adds a new request card to the UI.
+        /// </summary>
+        private void AddNewRequestCard()
+        {
+            var card = new ServiceRequestCard(this, _serviceRequestGraph)
+            {
+                DataContext = _currentRequest
+            };
+
+            var items = (ServiceRequestsControl.ItemsSource as List<ServiceRequestCard>) ?? new List<ServiceRequestCard>();
+            items.Add(card);
+            ServiceRequestsControl.ItemsSource = null;
+            ServiceRequestsControl.ItemsSource = items;
+        }
+
+        //------------------------------------------------------------------
+        /// <summary>
+        /// Updates the UI elements.
+        /// </summary>
+        private void UpdateUIElements()
+        {
+            UpdateHighPriorityList();
+            ClearFormFields();
+            IsFormVisible = false;
+            DataContext = this;
         }
 
         //------------------------------------------------------------------
@@ -663,7 +712,7 @@ namespace ST10204902_PROG7312_POE
         /// <param name="e">The routed event arguments.</param>
         private void ManageDependenciesButton_Click(object sender, RoutedEventArgs e)
         {
-            var dependencyWindow = new DependencyManagementWindow(_currentRequest, _serviceRequestGraph);
+            var dependencyWindow = new DependencyManagementWindow(_currentRequest, _serviceRequestGraph, this);
             if (dependencyWindow.ShowDialog() == true && dependencyWindow.SelectedDependencies != null)
             {
                 _currentRequest.Dependencies = new List<ServiceRequest>(dependencyWindow.SelectedDependencies);
@@ -808,17 +857,26 @@ namespace ST10204902_PROG7312_POE
         /// <param name="e">The routed event arguments.</param>
         private void PopulateDataButton_Click(object sender, RoutedEventArgs e)
         {
-            // Generate sample requests
-            var serviceRequests = ServiceRequestDataGenerator.GenerateSampleRequests(15);
+            // Get existing requests
+            var existingRequests = ServiceRequestsControl.ItemsSource?
+                .Cast<ServiceRequestCard>()
+                .Select(card => card.DataContext as ServiceRequest)
+                .ToList() ?? new List<ServiceRequest>();
 
-            // Add service requests to the graph
-            foreach (var request in serviceRequests)
+            // Generate sample requests
+            var newRequests = ServiceRequestDataGenerator.GenerateSampleRequests(15);
+
+            // Combine existing and new requests
+            var allRequests = existingRequests.Concat(newRequests).ToList();
+
+            // Add new service requests to the graph
+            foreach (var request in newRequests)
             {
                 _serviceRequestGraph.AddServiceRequest(request);
             }
 
-            // Add dependencies to the graph
-            foreach (var request in serviceRequests)
+            // Add dependencies for new requests to the graph
+            foreach (var request in newRequests)
             {
                 foreach (var dependency in request.Dependencies)
                 {
@@ -826,14 +884,14 @@ namespace ST10204902_PROG7312_POE
                 }
             }
 
-            // Add service requests to the priority queue
-            foreach (var request in serviceRequests)
+            // Add new service requests to the priority queue
+            foreach (var request in newRequests)
             {
                 _priorityQueue.Enqueue(request);
             }
 
-            // Update the UI
-            var serviceRequestCards = serviceRequests.Select(sr => new ServiceRequestCard(this, _serviceRequestGraph)
+            // Update the UI with all requests
+            var serviceRequestCards = allRequests.Select(sr => new ServiceRequestCard(this, _serviceRequestGraph)
             {
                 DataContext = sr
             }).ToList();

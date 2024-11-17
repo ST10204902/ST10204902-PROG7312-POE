@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ST10204902_PROG7312_POE.Models;
 using ST10204902_PROG7312_POE.DataStructures;
+using System.Diagnostics;
 
 namespace ST10204902_PROG7312_POE
 {
@@ -25,8 +26,10 @@ namespace ST10204902_PROG7312_POE
         // Fields
         //------------------------------------------------------------------
         private readonly ServiceRequest _currentRequest;
+
         private readonly List<ServiceRequest> _availableRequests;
         private readonly ServiceRequestGraph _serviceRequestGraph;
+        
         public List<ServiceRequest> SelectedDependencies { get; private set; }
 
         //------------------------------------------------------------------
@@ -34,24 +37,31 @@ namespace ST10204902_PROG7312_POE
         /// Initializes a new instance of the DependencyManagementWindow.
         /// </summary>
         /// <param name="currentRequest">The current service request.</param>
-        /// <param name="serviceRequestGraph">The service request graph.</param>    
-        public DependencyManagementWindow(ServiceRequest currentRequest, ServiceRequestGraph serviceRequestGraph)
+        /// <param name="serviceRequestGraph">The service request graph.</param>
+        public DependencyManagementWindow(ServiceRequest currentRequest, ServiceRequestGraph serviceRequestGraph, Window parentWindow)
         {
             InitializeComponent();
             _currentRequest = currentRequest;
             _serviceRequestGraph = serviceRequestGraph;
-
-            //Exclude current request from list
+            Owner = parentWindow;
+            // Exclude current request and filter out null entries
             _availableRequests = serviceRequestGraph.GetAllServiceRequests()
-                .Where(sr => sr != currentRequest).ToList() ;
+            .Where(sr => sr != null
+                && sr != currentRequest
+                && sr.Id != 0
+                && !string.IsNullOrEmpty(sr.Description))
+            .ToList();
 
             AvailableRequestsListBox.ItemsSource = _availableRequests;
             AvailableRequestsListBox.DisplayMemberPath = "Description";
 
-            // Preselect current dependencies
-            foreach(var dependency in currentRequest.Dependencies)
+            // Preselect current dependencies if they exist
+            if (currentRequest.Dependencies != null)
             {
-                AvailableRequestsListBox.SelectedItems.Add(dependency);
+                foreach (var dependency in currentRequest.Dependencies.Where(d => d != null))
+                {
+                    AvailableRequestsListBox.SelectedItems.Add(dependency);
+                }
             }
         }
 
@@ -65,27 +75,39 @@ namespace ST10204902_PROG7312_POE
         {
             // Get the selected dependencies
             SelectedDependencies = AvailableRequestsListBox.SelectedItems.Cast<ServiceRequest>().ToList();
+            
+            // Validate dependency levels first
+            if (!ValidateDependencyLevels(_currentRequest, SelectedDependencies))
+            {
+                return;
+            }
 
             // Create a temporary copy of the graph to test the new dependencies
             var tempGraph = new ServiceRequestGraph();
-            
-            // Add all existing service requests to the temp graph
+
+            // First add all vertices
             foreach (var request in _serviceRequestGraph.GetAllServiceRequests())
             {
                 tempGraph.AddServiceRequest(request);
-                
-                // Add existing dependencies except for the current request's dependencies
-                if (request != _currentRequest)
+            }
+
+            // Then add all existing dependencies
+            foreach (var request in _serviceRequestGraph.GetAllServiceRequests())
+            {
+                if (request.Dependencies != null)
                 {
-                    foreach (var dep in request.Dependencies)
+                    foreach (var dep in request.Dependencies.Where(d => d != null))
                     {
                         tempGraph.AddDependency(request, dep);
                     }
                 }
             }
 
-            // Add the new dependencies to the temp graph
-            foreach (var dependency in SelectedDependencies)
+            // Clear current request's existing dependencies
+            tempGraph.ClearDependencies(_currentRequest);
+
+            // Add only the new selected dependencies for current request
+            foreach (var dependency in SelectedDependencies.Where(d => d != null))
             {
                 tempGraph.AddDependency(_currentRequest, dependency);
             }
@@ -93,16 +115,13 @@ namespace ST10204902_PROG7312_POE
             // Check for circular dependencies
             if (tempGraph.HasCircularDependency())
             {
-                // Find the first circular dependency for demonstration
-                foreach (var dependency in SelectedDependencies)
-                {
-                    if (tempGraph.FindDependencyPath(dependency, _currentRequest).Any())
-                    {
-                        ShowCircularDependencyWarning(_currentRequest, dependency);
-                        return;
-                    }
-                }
+                ShowCircularDependencyWarning(_currentRequest, SelectedDependencies.First());
+                return;
             }
+
+            // If we get here, update the actual dependencies
+            _currentRequest.Dependencies = new List<ServiceRequest>(SelectedDependencies);
+
 
             DialogResult = true;
             Close();
@@ -125,10 +144,10 @@ namespace ST10204902_PROG7312_POE
         /// Gets the dependency path between two service requests.
         /// </summary>
         /// <param name="start">The starting service request.</param>
-        private string GetDependencyPath(ServiceRequest start, ServiceRequest end)
+        private string GetDependencyPath(ServiceRequest start, ServiceRequest end, ServiceRequestGraph graph)
         {
-            var path = _serviceRequestGraph.FindDependencyPath(start, end);
-            if (path.Count == 0) return string.Empty;
+            var path = graph.FindDependencyPath(start, end);
+            if (path == null || path.Count == 0) return string.Empty;
 
             return string.Join(" → ", path.Select(r => r.Id));
         }
@@ -141,14 +160,29 @@ namespace ST10204902_PROG7312_POE
         /// <param name="request2">The second service request.</param>
         private void ShowCircularDependencyWarning(ServiceRequest request1, ServiceRequest request2)
         {
-            var path = GetDependencyPath(request1, request2);
+            var tempGraph = new ServiceRequestGraph();
+
+            // Recreate the graph state
+            foreach (var request in _serviceRequestGraph.GetAllServiceRequests())
+            {
+                tempGraph.AddServiceRequest(request);
+                foreach (var dep in request.Dependencies ?? new List<ServiceRequest>())
+                {
+                    tempGraph.AddDependency(request, dep);
+                }
+            }
+
+            // Add the new dependency that would create the cycle
+            tempGraph.AddDependency(request1, request2);
+
+            var path = GetDependencyPath(request2, request1, tempGraph);
             var message = "Circular dependency detected!\n\n";
-            
+
             if (!string.IsNullOrEmpty(path))
             {
                 message += $"Dependency path: {path} → {request1.Id}\n\n";
             }
-            
+
             message += "Please select different dependencies.";
 
             MessageBox.Show(
@@ -167,16 +201,35 @@ namespace ST10204902_PROG7312_POE
         /// <param name="newDependencies">The new dependencies to validate.</param>
         private bool ValidateDependencyLevels(ServiceRequest request, List<ServiceRequest> newDependencies)
         {
+            var tempGraph = new ServiceRequestGraph();
+            
+            // Copy existing graph state
+            foreach (var existingRequest in _serviceRequestGraph.GetAllServiceRequests())
+            {
+                tempGraph.AddServiceRequest(existingRequest);
+                if (existingRequest.Dependencies != null)
+                {
+                    foreach (var dep in existingRequest.Dependencies)
+                    {
+                        tempGraph.AddDependency(existingRequest, dep);
+                    }
+                }
+            }
+
+            // Add new dependencies temporarily
             foreach (var dependency in newDependencies)
             {
-                // Use BFS to check dependency levels
-                var dependencyChain = _serviceRequestGraph.BreadthFirstSearch(dependency).ToList();
-                
-                // If dependency chain is too long (e.g., more than 3 levels)
-                if (dependencyChain.Count > 3)
+                tempGraph.AddDependency(request, dependency);
+            }
+
+            // Check the length of dependency chains
+            foreach (var serviceRequest in tempGraph.GetAllServiceRequests())
+            {
+                var chain = tempGraph.DepthFirstSearch(serviceRequest).ToList();
+                if (chain.Count > 3)
                 {
                     MessageBox.Show(
-                        "Warning: This would create a dependency chain longer than 3 levels.\n" +
+                        $"Warning: Adding these dependencies would create a chain longer than 3 levels starting from request {serviceRequest.Id} with description: {serviceRequest.Description}.\n" +
                         "Consider restructuring the dependencies.",
                         "Deep Dependency Chain",
                         MessageBoxButton.OK,
@@ -189,4 +242,5 @@ namespace ST10204902_PROG7312_POE
         }
     }
 }
+
 // ------------------------------EOF------------------------------------

@@ -1,6 +1,7 @@
 ﻿using ST10204902_PROG7312_POE.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace ST10204902_PROG7312_POE.DataStructures
@@ -32,15 +33,15 @@ namespace ST10204902_PROG7312_POE.DataStructures
         /// <param name="dependency">The service request it depends on.</param>
         public void AddDependency(ServiceRequest dependent, ServiceRequest dependency)
         {
+            Debug.WriteLine($"Adding Dependency - Dependent: {dependent?.Id ?? -1}, Dependency: {dependency?.Id ?? -1}");
+            if (dependent == null || dependency == null)
+                return;
+
             AddVertex(dependent);
             AddVertex(dependency);
             AddEdge(dependent, dependency);
 
-            // Update the Dependencies list in the ServiceRequest object
-            if (dependent.Dependencies == null)
-            {
-                dependent.Dependencies = new List<ServiceRequest>();
-            }
+            dependent.Dependencies ??= new List<ServiceRequest>();
 
             if (!dependent.Dependencies.Contains(dependency))
             {

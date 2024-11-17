@@ -26,7 +26,6 @@ namespace ST10204902_PROG7312_POE.Constants
 
         public static readonly string[] Statuses = {
         "Pending",
-        "In Progress",
         "Resolved"
     };
 
