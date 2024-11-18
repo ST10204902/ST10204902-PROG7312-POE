@@ -558,9 +558,15 @@ namespace ST10204902_PROG7312_POE
 
             try
             {
+              
+                // Store current attachments before creating new request
+                var currentAttachments = new List<MediaAttachment>(_currentRequest.Attachments);
+                
                 if (!IsEditMode)
                 {
                     CreateNewRequest();
+                    // Restore attachments after creating new request
+                    _currentRequest.Attachments = currentAttachments;
                 }
 
                 UpdateRequestProperties();
@@ -583,7 +589,6 @@ namespace ST10204902_PROG7312_POE
             // Store the current attachments and dependencies
             var currentAttachments = _currentRequest?.Attachments ?? new List<MediaAttachment>();
             var currentDependencies = _currentRequest?.Dependencies ?? new List<ServiceRequest>();
-
             _currentRequest = new ServiceRequest
             {
                 Id = GenerateNewId(),
@@ -593,7 +598,7 @@ namespace ST10204902_PROG7312_POE
                 Attachments = currentAttachments,
                 Dependencies = currentDependencies
             };
-
+            
             _serviceRequestGraph.AddServiceRequest(_currentRequest);
 
             // Re-add the dependencies to the graph
@@ -609,8 +614,6 @@ namespace ST10204902_PROG7312_POE
         /// </summary>
         private void UpdateRequestProperties()
         {
-            var existingAttachments = IsEditMode ? _currentRequest.Attachments : new List<MediaAttachment>();
-
             _currentRequest.RequesterName = RequesterNameTextBox.Text;
             _currentRequest.ContactInfo = ContactInfoTextBox.Text;
             _currentRequest.Location = LocationTextBox.Text;
@@ -621,11 +624,6 @@ namespace ST10204902_PROG7312_POE
             _currentRequest.ResolutionComment = ResolutionCommentTextBox.Text;
             _currentRequest.DateSubmitted = DateTime.Now;
 
-
-            if (_currentRequest.Attachments == null || !IsEditMode)
-            {
-                _currentRequest.Attachments = existingAttachments;
-            }
             // Single impact analysis call after properties are updated
             AnalyseRequestImpact(_currentRequest);
         }
@@ -785,22 +783,18 @@ namespace ST10204902_PROG7312_POE
             };
 
             if (openFileDialog.ShowDialog() == true)
-            {
+            {               
                 foreach (string filename in openFileDialog.FileNames)
                 {
                     try
                     {
-                        string fileName = Path.GetFileName(filename);
-                        byte[] fileData = File.ReadAllBytes(filename);
-                        Type fileType = GetFileType(Path.GetExtension(filename));
-
                         var attachment = new MediaAttachment(
-                            fileName,
+                            Path.GetFileName(filename),
                             filename,
-                            fileData,
-                            fileType
+                            File.ReadAllBytes(filename),
+                            GetFileType(Path.GetExtension(filename))
                         );
-
+                        
                         _currentRequest.Attachments.Add(attachment);
                     }
                     catch (Exception ex)
@@ -809,7 +803,7 @@ namespace ST10204902_PROG7312_POE
                             "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
-
+               
                 // Force UI update
                 AttachmentsListBox.ItemsSource = null;
                 AttachmentsListBox.ItemsSource = _currentRequest.Attachments;
