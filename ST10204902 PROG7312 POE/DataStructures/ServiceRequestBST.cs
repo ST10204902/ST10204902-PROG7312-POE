@@ -121,6 +121,13 @@ namespace ST10204902_PROG7312_POE.DataStructures
         //------------------------------------------------------------------
         // Private Helper Methods
         //------------------------------------------------------------------
+
+        /// <summary>
+        /// Recursive helper method to insert a new service request into the BST.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
         private Node InsertRec(Node node, ServiceRequest request)
         {
             if (node == null)
@@ -163,6 +170,11 @@ namespace ST10204902_PROG7312_POE.DataStructures
         }
 
         //------------------------------------------------------------------
+        /// <summary>
+        /// Recursive helper method to perform an in-order traversal of the BST.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="result"></param>
         private void InOrderTraversalRec(Node node, List<ServiceRequest> result)
         {
             if (node != null)
@@ -174,6 +186,11 @@ namespace ST10204902_PROG7312_POE.DataStructures
         }
 
         //------------------------------------------------------------------
+        /// <summary>
+        /// Recursive helper method to perform a pre-order traversal of the BST.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="result"></param>
         private void PreOrderTraversalRec(Node node, List<ServiceRequest> result)
         {
             if (node != null)
@@ -185,6 +202,11 @@ namespace ST10204902_PROG7312_POE.DataStructures
         }
 
         //------------------------------------------------------------------
+        /// <summary>
+        /// Recursive helper method to perform a post-order traversal of the BST.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="result"></param>
         private void PostOrderTraversalRec(Node node, List<ServiceRequest> result)
         {
             if (node != null)
@@ -196,6 +218,12 @@ namespace ST10204902_PROG7312_POE.DataStructures
         }
 
         //------------------------------------------------------------------
+        /// <summary>
+        /// Searches for a service request by ID.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         private Node SearchRec(Node node, int id)
         {
             if (node == null || node.Data.Id == id)
@@ -208,6 +236,13 @@ namespace ST10204902_PROG7312_POE.DataStructures
         }
 
         //------------------------------------------------------------------
+        /// <summary>
+        /// Recursive helper method to search for service requests by date range.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="result"></param>
         private void SearchByDateRangeRec(Node node, DateTime startDate, DateTime endDate, List<ServiceRequest> result)
         {
             if (node != null)
@@ -222,6 +257,11 @@ namespace ST10204902_PROG7312_POE.DataStructures
         }
 
         //------------------------------------------------------------------
+        /// <summary>
+        /// Performs a right rotation on the given node.
+        /// </summary>
+        /// <param name="y"></param>
+        /// <returns></returns>
         private Node RightRotate(Node y)
         {
             Node x = y.Left;
@@ -237,6 +277,11 @@ namespace ST10204902_PROG7312_POE.DataStructures
         }
 
         //------------------------------------------------------------------
+        /// <summary>
+        /// Performs a left rotation on the given node.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
         private Node LeftRotate(Node x)
         {
             Node y = x.Right;
@@ -252,12 +297,22 @@ namespace ST10204902_PROG7312_POE.DataStructures
         }
 
         //------------------------------------------------------------------
+        /// <summary>
+        /// Helper method to get the height of a node.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         private int GetHeight(Node node)
         {
             return node?.Height ?? 0;
         }
 
         //------------------------------------------------------------------
+        /// <summary>
+        /// Helper method to get the balance factor of a node.
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         private int GetBalance(Node node)
         {
             if (node == null)

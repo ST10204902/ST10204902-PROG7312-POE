@@ -14,10 +14,13 @@ namespace ST10204902_PROG7312_POE.Models
     /// </summary>
     public class ServiceRequest : INotifyPropertyChanged
     {
+        //Variables
         private string _status;
         private DateTime? _dateResolved;
         private string _resolutionComment;
+        private List<MediaAttachment> _attachments;
 
+        //Events
         public event PropertyChangedEventHandler PropertyChanged;
 
         public int Id { get; set; }
@@ -65,11 +68,28 @@ namespace ST10204902_PROG7312_POE.Models
             }
         }
         public string Category { get; set; }
-        public List<MediaAttachment> Attachments { get; set; }
+        public List<MediaAttachment> Attachments
+    {
+        get => _attachments ?? (_attachments = new List<MediaAttachment>());
+        set
+            {
+                if (_attachments != value)
+                {
+                    _attachments = new List<MediaAttachment>(value ?? new List<MediaAttachment>());
+                    OnPropertyChanged(nameof(Attachments));
+                }
+            }
+        }
         public List<Tuple<DateTime, string>> StatusHistory { get; set; }
         public List<ServiceRequest> Dependencies { get; set; } = new List<ServiceRequest>();
 
-        protected virtual void OnPropertyChanged(string propertyName)
+
+        //---------------------------------------------------------
+        /// <summary>
+        /// Property changed event handler
+        /// </summary>
+        /// <param name="propertyName"></param>
+        public void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

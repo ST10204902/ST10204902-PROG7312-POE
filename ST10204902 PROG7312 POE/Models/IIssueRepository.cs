@@ -11,9 +11,10 @@ namespace ST10204902_PROG7312_POE.Models
     /// </summary>
     public interface IIssueRepository
     {
-        
+        //Methods
         IEnumerable<Issue> GetAllIssues();
         void AddIssue(Issue issue);
         void RemoveIssue(Issue issue);
     }
 }
+// ------------------------------EOF------------------------------------

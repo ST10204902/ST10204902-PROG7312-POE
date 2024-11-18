@@ -580,7 +580,8 @@ namespace ST10204902_PROG7312_POE
         /// </summary>
         private void CreateNewRequest()
         {
-            // Store the current dependencies before creating new request
+            // Store the current attachments and dependencies
+            var currentAttachments = _currentRequest?.Attachments ?? new List<MediaAttachment>();
             var currentDependencies = _currentRequest?.Dependencies ?? new List<ServiceRequest>();
 
             _currentRequest = new ServiceRequest
@@ -589,9 +590,10 @@ namespace ST10204902_PROG7312_POE
                 Status = "Pending",
                 DateSubmitted = DateTime.Now,
                 StatusHistory = new List<Tuple<DateTime, string>>(),
-                Attachments = new List<MediaAttachment>(),
-                Dependencies = new List<ServiceRequest>()
+                Attachments = currentAttachments,
+                Dependencies = currentDependencies
             };
+
             _serviceRequestGraph.AddServiceRequest(_currentRequest);
 
             // Re-add the dependencies to the graph
@@ -607,6 +609,8 @@ namespace ST10204902_PROG7312_POE
         /// </summary>
         private void UpdateRequestProperties()
         {
+            var existingAttachments = IsEditMode ? _currentRequest.Attachments : new List<MediaAttachment>();
+
             _currentRequest.RequesterName = RequesterNameTextBox.Text;
             _currentRequest.ContactInfo = ContactInfoTextBox.Text;
             _currentRequest.Location = LocationTextBox.Text;
@@ -617,6 +621,11 @@ namespace ST10204902_PROG7312_POE
             _currentRequest.ResolutionComment = ResolutionCommentTextBox.Text;
             _currentRequest.DateSubmitted = DateTime.Now;
 
+
+            if (_currentRequest.Attachments == null || !IsEditMode)
+            {
+                _currentRequest.Attachments = existingAttachments;
+            }
             // Single impact analysis call after properties are updated
             AnalyseRequestImpact(_currentRequest);
         }
@@ -767,43 +776,46 @@ namespace ST10204902_PROG7312_POE
         /// </summary>
         /// <param name="sender">The sender object.</param>
         /// <param name="e">The routed event arguments.</param>
-        private async void AttachMediaButton_Click(object sender, RoutedEventArgs e)
+        private void AttachMediaButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            var openFileDialog = new OpenFileDialog
             {
-                Filter = "Image Files|*.jpg;*.jpeg;*.png|Document Files|*.pdf;*.docx;*.txt",
-                Title = "Select Media Files",
-                Multiselect = true
+                Multiselect = true,
+                Filter = "All Files|*.*|Images|*.jpg;*.jpeg;*.png|Documents|*.pdf;*.doc;*.docx"
             };
 
             if (openFileDialog.ShowDialog() == true)
             {
-                List<string> validFiles = new List<string>();
-                foreach (string filePath in openFileDialog.FileNames)
+                foreach (string filename in openFileDialog.FileNames)
                 {
                     try
                     {
-                        MediaAttachment mediaAttachment = new MediaAttachment(
-                            Path.GetFileName(filePath),
-                            filePath,
-                            MediaAttachment.LoadFileData(filePath),
-                            typeof(object));
+                        string fileName = Path.GetFileName(filename);
+                        byte[] fileData = File.ReadAllBytes(filename);
+                        Type fileType = GetFileType(Path.GetExtension(filename));
 
-                        validFiles.Add(filePath);
-                        _currentRequest.Attachments.Add(mediaAttachment);
+                        var attachment = new MediaAttachment(
+                            fileName,
+                            filename,
+                            fileData,
+                            fileType
+                        );
+
+                        _currentRequest.Attachments.Add(attachment);
                     }
-                    catch (InvalidOperationException ex)
+                    catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message, "Invalid Media Attachment",
-                            MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"Error adding file {filename}: {ex.Message}",
+                            "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
 
-                if (validFiles.Any())
-                {
-                    AttachmentsListBox.ItemsSource = null;
-                    AttachmentsListBox.ItemsSource = _currentRequest.Attachments;
-                }
+                // Force UI update
+                AttachmentsListBox.ItemsSource = null;
+                AttachmentsListBox.ItemsSource = _currentRequest.Attachments;
+
+                // Notify property changed
+                _currentRequest.OnPropertyChanged(nameof(_currentRequest.Attachments));
             }
         }
 
@@ -961,6 +973,36 @@ namespace ST10204902_PROG7312_POE
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             _mainWindow.Show();
+        }
+
+        //------------------------------------------------------------------
+        /// <summary>
+        /// Gets the file type based on the file extension.
+        /// </summary>
+        /// <param name="extension">The file extension.</param>
+        /// <returns>The appropriate file type.</returns>
+        private Type GetFileType(string extension)
+        {
+            switch (extension.ToLower())
+            {
+                case ".jpg":
+                case ".jpeg":
+                case ".png":
+                    return typeof(System.Drawing.Image);
+
+                case ".pdf":
+                    return typeof(System.IO.FileInfo);
+
+                case ".doc":
+                case ".docx":
+                    return typeof(System.IO.FileInfo);
+
+                case ".txt":
+                    return typeof(System.String);
+
+                default:
+                    return typeof(System.IO.FileInfo);
+            }
         }
     }
 }

@@ -5,8 +5,20 @@ using System.Windows.Data;
 using System.Windows.Controls;
 namespace ST10204902_PROG7312_POE.Converters
 {
+    /// <summary>
+    /// Converts a URL to an image.
+    /// </summary>
     public class UrlToImageConverter : IValueConverter
     {
+        //------------------------------------------------------------------
+        /// <summary>
+        /// Converts a URL to an image.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="targetType"></param>
+        /// <param name="parameter"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is string url && !string.IsNullOrEmpty(url))
@@ -28,9 +40,20 @@ namespace ST10204902_PROG7312_POE.Converters
             return null;
         }
 
+        //------------------------------------------------------------------
+        /// <summary>
+        /// Converts an image to a URL.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="targetType"></param>
+        /// <param name="parameter"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
     }
 }
+// ------------------------------EOF------------------------------------

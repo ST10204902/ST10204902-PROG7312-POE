@@ -51,10 +51,10 @@ namespace ST10204902_PROG7312_POE
             _currentRequest = selectedRequest;
 
             // Initialize lists
-            StatusHistoryList.ItemsSource = selectedRequest.StatusHistory;
-            AttachmentsList.ItemsSource = selectedRequest.Attachments;
+            StatusHistoryList.ItemsSource = _currentRequest.StatusHistory;
+            AttachmentsList.ItemsSource = _currentRequest.Attachments;
             
-            DisplayAssociatedServiceRequests(selectedRequest);
+            DisplayAssociatedServiceRequests(_currentRequest);
         }
 
         //------------------------------------------------------------------

@@ -138,7 +138,8 @@
                 <TextBlock Text="Attachments" Style="{StaticResource HeaderTextBlockStyle}"/>
                 <ListBox x:Name="AttachmentsList"
                         MaxHeight="150"
-                        Margin="10,0,0,20">
+                        Margin="10,0,0,20"
+                        ItemsSource="{Binding Attachments, UpdateSourceTrigger=PropertyChanged}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">

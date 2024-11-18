@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace ST10204902_PROG7312_POE.Models
 {
+    /// <summary>
+    /// Represents a feedback response.
+    /// </summary>
     public class FeedbackResponse
     {
         //---------------------------------------------------------
@@ -47,3 +50,4 @@ namespace ST10204902_PROG7312_POE.Models
         }
     }
 }
+//-----------------------------EOF------------------------------------

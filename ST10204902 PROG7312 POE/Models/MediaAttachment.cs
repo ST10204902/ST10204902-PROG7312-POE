@@ -14,10 +14,10 @@ namespace ST10204902_PROG7312_POE.Models
     {
         //---------------------------------------------------------
         //Variables
-        public string FileName { get; private set; }
-        public string FilePath { get; private set; }
-        public byte[] FileData { get; private set; }
-        public Type FileType { get; private set; }
+        public string FileName { get; set; }
+        public string FilePath { get; set; }
+        public byte[] FileData { get; set; }
+        public Type FileType { get; set; }
 
         //---------------------------------------------------------
         /// <summary>
@@ -67,5 +67,5 @@ namespace ST10204902_PROG7312_POE.Models
         }
     } 
 }
+// ------------------------------EOF------------------------------------
 
-    
